@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}AI Image Object Remover — Nova Technologies{% endblock %}</title>
+  <meta name="description" content="{% block meta_desc %}Free AI-powered tool to remove watermarks, logos, text, buttons and objects from any image. No sign-up, files deleted in 20 minutes.{% endblock %}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/style.css" />
+  <!-- Google AdSense — replace ca-pub-XXXXXXXXXXXXXXXX with your publisher ID -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+  {% block head %}{% endblock %}
+</head>
+<body>
+
+  <!-- Header / Nav -->
+  <header class="header">
+    <div class="container header-inner">
+      <a href="/" class="logo" style="text-decoration:none">
+        <span class="logo-nova">Nova</span><span class="logo-tech">Technologies</span>
+      </a>
+      <nav class="nav">
+        <a href="/" class="nav-link {% if active == 'home' %}nav-active{% endif %}">Tool</a>
+        <a href="/blog" class="nav-link {% if active == 'blog' %}nav-active{% endif %}">Blog</a>
+        <a href="/about" class="nav-link {% if active == 'about' %}nav-active{% endif %}">About</a>
+        <a href="/privacy" class="nav-link {% if active == 'privacy' %}nav-active{% endif %}">Privacy</a>
+      </nav>
+    </div>
+  </header>
+
+  {% block content %}{% endblock %}
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2026 <strong>Nova Technologies</strong> — Web · AI · Hosting · Marketing · Apps</p>
+      <p class="footer-links">
+        <a href="/">Tool</a> &middot;
+        <a href="/blog">Blog</a> &middot;
+        <a href="/about">About</a> &middot;
+        <a href="/privacy">Privacy Policy</a> &middot;
+        <a href="mailto:novamarketingdon@gmail.com">Contact</a>
+      </p>
+    </div>
+  </footer>
+
+</body>
+</html>
