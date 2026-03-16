@@ -23,7 +23,16 @@
         <span class="logo-nova">Nova</span><span class="logo-tech">Technologies</span>
       </a>
       <nav class="nav">
-        <a href="/" class="nav-link {% if active == 'home' %}nav-active{% endif %}">Tool</a>
+        <div class="nav-dropdown">
+          <button class="nav-link nav-drop-btn {% if active == 'home' or active == 'tools' %}nav-active{% endif %}">
+            Tools ▾
+          </button>
+          <div class="dropdown-menu">
+            <a href="/" class="dropdown-item">🖌️ Object Remover</a>
+            <a href="/remove-background" class="dropdown-item">✂️ Background Remover</a>
+            <a href="/image-editor" class="dropdown-item">🖼️ Image Editor</a>
+          </div>
+        </div>
         <a href="/blog" class="nav-link {% if active == 'blog' %}nav-active{% endif %}">Blog</a>
         <a href="/about" class="nav-link {% if active == 'about' %}nav-active{% endif %}">About</a>
         <a href="/privacy" class="nav-link {% if active == 'privacy' %}nav-active{% endif %}">Privacy</a>
@@ -38,7 +47,9 @@
     <div class="container">
       <p>&copy; 2026 <strong>Nova Technologies</strong> — Web · AI · Hosting · Marketing · Apps</p>
       <p class="footer-links">
-        <a href="/">Tool</a> &middot;
+        <a href="/">Object Remover</a> &middot;
+        <a href="/remove-background">Background Remover</a> &middot;
+        <a href="/image-editor">Image Editor</a> &middot;
         <a href="/blog">Blog</a> &middot;
         <a href="/about">About</a> &middot;
         <a href="/privacy">Privacy Policy</a> &middot;
