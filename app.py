@@ -67,6 +67,10 @@ def inpaint_image(image_path, mask_path, result_path):
 def index():
     return render_template('index.html', active='home')
 
+@app.route('/sitemap.xml')
+def sitemap():
+    return send_from_directory('static', 'sitemap.xml', mimetype='application/xml')
+
 @app.route('/about')
 def about():
     return render_template('about.html', active='about')
