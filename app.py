@@ -71,6 +71,10 @@ def index():
 def sitemap():
     return send_from_directory('static', 'sitemap.xml', mimetype='application/xml')
 
+@app.route('/ads.txt')
+def ads_txt():
+    return send_from_directory('static', 'ads.txt', mimetype='text/plain')
+
 @app.route('/about')
 def about():
     return render_template('about.html', active='about')
