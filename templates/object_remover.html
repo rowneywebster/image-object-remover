@@ -80,11 +80,27 @@
     </div>
 
     <!-- Progress -->
-    <div class="progress-wrap hidden" id="progressWrap">
-      <div class="progress-bar">
-        <div class="progress-fill" id="progressFill"></div>
+    <!-- Steps Progress -->
+    <div class="steps-wrap hidden" id="stepsWrap">
+      <div class="steps">
+        <div class="step" id="step1">
+          <div class="step-circle">1</div>
+          <span class="step-label">Upload</span>
+        </div>
+        <div class="step" id="step2">
+          <div class="step-circle">2</div>
+          <span class="step-label">Paint mask</span>
+        </div>
+        <div class="step" id="step3">
+          <div class="step-circle">3</div>
+          <span class="step-label">Processing</span>
+        </div>
+        <div class="step" id="step4">
+          <div class="step-circle">✓</div>
+          <span class="step-label">Done</span>
+        </div>
       </div>
-      <p class="progress-label" id="progressLabel">Processing...</p>
+      <p class="steps-msg" id="stepsMsg">Loading image...</p>
     </div>
 
     <!-- Error -->
@@ -173,12 +189,12 @@
     // ── Elements ──────────────────────────────────────────────────────────────
     const uploadZone    = document.getElementById('uploadZone');
     const fileInput     = document.getElementById('fileInput');
-    const step1         = document.getElementById('step1');
-    const step2         = document.getElementById('step2');
-    const step3         = document.getElementById('step3');
-    const progressWrap  = document.getElementById('progressWrap');
-    const progressFill  = document.getElementById('progressFill');
-    const progressLabel = document.getElementById('progressLabel');
+    const step1     = document.getElementById('step1');
+    const step2     = document.getElementById('step2');
+    const step3     = document.getElementById('step3');
+    const step4     = document.getElementById('step4');
+    const stepsWrap = document.getElementById('stepsWrap');
+    const stepsMsg  = document.getElementById('stepsMsg');
     const errorBox      = document.getElementById('errorBox');
     const errorMsg      = document.getElementById('errorMsg');
     const downloadBtn   = document.getElementById('downloadBtn');
@@ -239,7 +255,7 @@
           maskCtx.clearRect(0, 0, w, h);
           history = [];
 
-          goStep(2);
+          setStep(2, 'active', 'Paint over the object you want to remove, then click Remove.');
         };
         img.src = e.target.result;
         originalUrl = e.target.result;
@@ -263,7 +279,7 @@
     });
 
     document.getElementById('backBtn').addEventListener('click', () => {
-      goStep(1);
+      stepsWrap.classList.add('hidden');
       fileInput.value = '';
       originalFile = null;
     });
@@ -314,9 +330,7 @@
       }
 
       hideError();
-      goStep(2);
-      showProgress('Preparing image...');
-      setProgress(15);
+      setStep(3, 'spinning', 'Sending to AI...');
 
       // Build mask: white on black
       const offscreen = document.createElement('canvas');
@@ -348,29 +362,22 @@
       formData.append('image', imgBlob, 'image.png');
       formData.append('mask',  maskBlob, 'mask.png');
 
-      setProgress(35);
-      progressLabel.textContent = 'Sending to AI...';
-
       try {
+        setStep(3, 'spinning', 'AI is removing the object...');
         const res  = await fetch('/api/remove', { method: 'POST', body: formData });
-        setProgress(80);
-        progressLabel.textContent = 'AI is removing the watermark...';
         const data = await res.json();
 
         if (!res.ok) {
-          hideProgress();
+          setStep(3, '', '');
           showError(data.error || 'Something went wrong. Please try again.');
           return;
         }
 
-        setProgress(100);
-        setTimeout(() => {
-          hideProgress();
-          showResult(data);
-        }, 300);
+        setStep(4, 'done', 'Done! Your image is ready.');
+        setTimeout(() => showResult(data), 400);
 
       } catch (_) {
-        hideProgress();
+        setStep(3, '', '');
         showError('Network error. Please check your connection and try again.');
       }
     });
@@ -382,14 +389,12 @@
       document.getElementById('imgCompareLeft').src  = data.original;
       document.getElementById('imgCompareRight').src = data.result;
       downloadBtn.href = data.result;
-
-      hideProgress();
-      goStep(3);
+      stepsWrap.classList.add('hidden');
       setActiveTab('after');
     }
 
     newImageBtn.addEventListener('click', () => {
-      goStep(1);
+      stepsWrap.classList.add('hidden');
       fileInput.value = '';
       originalFile = null;
     });
@@ -437,15 +442,20 @@
       document.getElementById('imgCompareRight').style.clipPath = `inset(0 0 0 ${pct}%)`;
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
-    function showProgress(msg) {
-      progressLabel.textContent = msg;
-      progressWrap.classList.remove('hidden');
-      step2.classList.add('hidden');
+    // ── Steps helpers ─────────────────────────────────────────────────────────
+    function setStep(num, state, msg) {
+      [step1, step2, step3, step4].forEach((s, i) => {
+        s.classList.remove('active', 'done', 'step-spinning');
+        if (i + 1 < num)  s.classList.add('done');
+        if (i + 1 === num) {
+          s.classList.add(state === 'spinning' ? 'step-spinning' : 'active');
+          if (state === 'done') s.classList.add('done');
+        }
+      });
+      stepsMsg.textContent = msg;
+      stepsWrap.classList.remove('hidden');
     }
 
-    function hideProgress() { progressWrap.classList.add('hidden'); setProgress(0); }
-    function setProgress(p) { progressFill.style.width = `${p}%`; }
     function showError(msg) { errorMsg.textContent = msg; errorBox.classList.remove('hidden'); }
     function hideError()    { errorBox.classList.add('hidden'); }
   </script>

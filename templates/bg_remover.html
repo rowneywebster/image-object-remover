@@ -33,10 +33,23 @@
     <p class="upload-hint">JPEG · PNG · WebP · Max 20 MB</p>
   </div>
 
-  <!-- Progress -->
-  <div class="progress-wrap hidden" id="progressWrap">
-    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-    <p class="progress-label" id="progressLabel">Uploading...</p>
+  <!-- Steps Progress -->
+  <div class="steps-wrap hidden" id="stepsWrap">
+    <div class="steps">
+      <div class="step" id="step1">
+        <div class="step-circle">1</div>
+        <span class="step-label">Upload</span>
+      </div>
+      <div class="step" id="step2">
+        <div class="step-circle">2</div>
+        <span class="step-label">AI Processing</span>
+      </div>
+      <div class="step" id="step3">
+        <div class="step-circle">✓</div>
+        <span class="step-label">Done</span>
+      </div>
+    </div>
+    <p class="steps-msg" id="stepsMsg">Uploading image...</p>
   </div>
 
   <!-- Error -->
@@ -122,9 +135,25 @@
 <script>
   const uploadZone   = document.getElementById('uploadZone');
   const fileInput    = document.getElementById('fileInput');
-  const progressWrap = document.getElementById('progressWrap');
-  const progressFill = document.getElementById('progressFill');
-  const progressLabel= document.getElementById('progressLabel');
+  const stepsWrap = document.getElementById('stepsWrap');
+  const stepsMsg  = document.getElementById('stepsMsg');
+  const step1     = document.getElementById('step1');
+  const step2     = document.getElementById('step2');
+  const step3     = document.getElementById('step3');
+
+  function setStep(num, state, msg) {
+    [step1, step2, step3].forEach((s, i) => {
+      s.classList.remove('active', 'done', 'step-spinning');
+      if (i + 1 < num) s.classList.add('done');
+      if (i + 1 === num) {
+        if (state === 'spinning') s.classList.add('step-spinning');
+        else if (state === 'done') s.classList.add('done');
+        else s.classList.add('active');
+      }
+    });
+    stepsMsg.textContent = msg;
+    stepsWrap.classList.remove('hidden');
+  }
   const errorBox     = document.getElementById('errorBox');
   const errorMsg     = document.getElementById('errorMsg');
   const resultWrap   = document.getElementById('resultWrap');
@@ -144,18 +173,17 @@
 
   async function processFile(file) {
     hideError();
-    showProgress('Uploading image...'); setProgress(15);
+    setStep(1, 'done', 'Uploading...');
     const formData = new FormData();
     formData.append('image', file);
     try {
-      setProgress(35); progressLabel.textContent = 'AI removing background...';
+      setStep(2, 'spinning', 'AI is removing the background — this takes 5–15 seconds...');
       const res = await fetch('/api/remove-bg', { method: 'POST', body: formData });
-      setProgress(80); progressLabel.textContent = 'Finalizing...';
       const data = await res.json();
-      if (!res.ok) { hideProgress(); showError(data.error || 'Something went wrong.'); return; }
-      setProgress(100);
-      setTimeout(() => { hideProgress(); showResult(data); }, 300);
-    } catch { hideProgress(); showError('Network error. Please try again.'); }
+      if (!res.ok) { stepsWrap.classList.add('hidden'); showError(data.error || 'Something went wrong.'); return; }
+      setStep(3, 'done', 'Done! Your background has been removed.');
+      setTimeout(() => { stepsWrap.classList.add('hidden'); showResult(data); }, 600);
+    } catch { stepsWrap.classList.add('hidden'); showError('Network error. Please try again.'); }
   }
 
   function showResult(data) {
@@ -241,9 +269,6 @@
     document.getElementById('imgCompareRight').style.clipPath = `inset(0 0 0 ${pct}%)`;
   });
 
-  function showProgress(msg) { progressLabel.textContent = msg; progressWrap.classList.remove('hidden'); }
-  function hideProgress() { progressWrap.classList.add('hidden'); setProgress(0); }
-  function setProgress(p) { progressFill.style.width = `${p}%`; }
   function showError(msg) { errorMsg.textContent = msg; errorBox.classList.remove('hidden'); }
   function hideError() { errorBox.classList.add('hidden'); }
 </script>

@@ -256,7 +256,9 @@
   async function applyAction(action) {
     if (!currentFile) return;
     hideError();
-    btn_loading(true);
+    const activeBtn = document.querySelector(`.apply-btn[data-action="${action}"]`);
+    const origText = activeBtn ? activeBtn.textContent : '';
+    btn_loading(true, activeBtn, '⟳ Processing...');
 
     const formData = new FormData();
     formData.append('image', currentFile);
@@ -283,7 +285,7 @@
     try {
       const res = await fetch('/api/edit', { method: 'POST', body: formData });
       const data = await res.json();
-      if (!res.ok) { showError(data.error || 'Processing failed.'); btn_loading(false); return; }
+      if (!res.ok) { showError(data.error || 'Processing failed.'); btn_loading(false, activeBtn, origText); return; }
 
       previewImg.src = data.result + '?t=' + Date.now();
       previewImg.onload = () => {
@@ -296,11 +298,12 @@
       const blob = await fetch(data.result).then(r => r.blob());
       currentFile = new File([blob], `edited.${data.ext || 'jpg'}`, { type: blob.type });
     } catch { showError('Network error. Please try again.'); }
-    btn_loading(false);
+    btn_loading(false, activeBtn, origText);
   }
 
-  function btn_loading(loading) {
+  function btn_loading(loading, btn, label) {
     document.querySelectorAll('.apply-btn').forEach(b => b.disabled = loading);
+    if (btn) btn.textContent = loading ? label : label;
   }
 
   document.getElementById('resetBtn').addEventListener('click', () => {
