@@ -1,0 +1,279 @@
+{% extends 'base.html' %}
+
+{% block title %}Color Picker from Image — Get HEX, RGB & HSL Free{% endblock %}
+{% block meta_desc %}Pick any color from any image. Upload a photo and click to get HEX, RGB and HSL color codes instantly. Free, no signup.{% endblock %}
+
+{% block content %}
+
+<!-- Ad: Top Banner -->
+<div class="ad-wrap">
+  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-3434791276648961" data-ad-slot="1111111111" data-ad-format="auto" data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+
+<section class="hero">
+  <div class="container">
+    <h1>Color Picker from Image</h1>
+    <p class="hero-sub">Upload any image, click any pixel — instantly get HEX, RGB and HSL color codes.</p>
+  </div>
+</section>
+
+<main class="container tool-wrapper">
+
+  <!-- Upload Zone -->
+  <div class="upload-zone" id="uploadZone">
+    <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp,image/gif" hidden />
+    <div class="upload-icon">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+        <polyline points="17 8 12 3 7 8"/>
+        <line x1="12" y1="3" x2="12" y2="15"/>
+      </svg>
+    </div>
+    <p class="upload-label">Drop image here or <span class="link">click to browse</span></p>
+    <p class="upload-hint">JPEG · PNG · WebP · GIF</p>
+  </div>
+
+  <!-- Picker UI -->
+  <div class="hidden picker-wrap" id="pickerWrap">
+
+    <div class="picker-layout">
+
+      <!-- Canvas -->
+      <div class="canvas-container">
+        <p class="preview-label">Click anywhere on the image to pick a color</p>
+        <div class="canvas-box">
+          <canvas id="imgCanvas"></canvas>
+          <div class="crosshair" id="crosshair"></div>
+        </div>
+      </div>
+
+      <!-- Color Info Panel -->
+      <div class="color-panel">
+
+        <div class="color-swatch" id="colorSwatch"></div>
+
+        <div class="color-values">
+
+          <div class="color-row">
+            <span class="color-label">HEX</span>
+            <span class="color-value" id="hexVal">#000000</span>
+            <button class="copy-btn" data-target="hexVal" title="Copy">⧉</button>
+          </div>
+
+          <div class="color-row">
+            <span class="color-label">RGB</span>
+            <span class="color-value" id="rgbVal">rgb(0, 0, 0)</span>
+            <button class="copy-btn" data-target="rgbVal" title="Copy">⧉</button>
+          </div>
+
+          <div class="color-row">
+            <span class="color-label">HSL</span>
+            <span class="color-value" id="hslVal">hsl(0, 0%, 0%)</span>
+            <button class="copy-btn" data-target="hslVal" title="Copy">⧉</button>
+          </div>
+
+        </div>
+
+        <!-- Palette: last 10 picked colors -->
+        <div class="palette-section">
+          <p class="palette-label">Picked colors</p>
+          <div class="palette" id="palette"></div>
+        </div>
+
+        <button class="btn btn-secondary" id="newImageBtn" style="width:100%;margin-top:16px">New Image</button>
+      </div>
+
+    </div>
+
+    <!-- Ad: Mid -->
+    <div class="ad-wrap" style="margin-top:24px">
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-3434791276648961" data-ad-slot="2222222222" data-ad-format="auto" data-full-width-responsive="true"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
+
+  </div>
+
+</main>
+
+<!-- Features -->
+<section class="features">
+  <div class="container features-grid">
+    <div class="feature"><div class="feature-icon">🎨</div><h3>3 Color Formats</h3><p>Get HEX, RGB, and HSL values with a single click — copy any format instantly.</p></div>
+    <div class="feature"><div class="feature-icon">🖼️</div><h3>Works on Any Image</h3><p>Photos, logos, screenshots, gradients — pick colors from any image type.</p></div>
+    <div class="feature"><div class="feature-icon">📋</div><h3>Color History</h3><p>Your last 10 picked colors are saved so you can build a palette as you go.</p></div>
+  </div>
+</section>
+
+<!-- Ad: Footer -->
+<div class="ad-wrap container" style="margin-bottom:32px">
+  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-3434791276648961" data-ad-slot="3333333333" data-ad-format="auto" data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+
+<script>
+  const uploadZone = document.getElementById('uploadZone');
+  const fileInput  = document.getElementById('fileInput');
+  const pickerWrap = document.getElementById('pickerWrap');
+  const canvas     = document.getElementById('imgCanvas');
+  const ctx        = canvas.getContext('2d', { willReadFrequently: true });
+  const crosshair  = document.getElementById('crosshair');
+  const palette    = document.getElementById('palette');
+  let pickedColors = [];
+
+  uploadZone.addEventListener('click', () => fileInput.click());
+  uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+  uploadZone.addEventListener('drop', e => { e.preventDefault(); uploadZone.classList.remove('drag-over'); if (e.dataTransfer.files[0]) loadImage(e.dataTransfer.files[0]); });
+  fileInput.addEventListener('change', () => { if (fileInput.files[0]) loadImage(fileInput.files[0]); });
+
+  function loadImage(file) {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      // Scale to fit container max 700px wide
+      const maxW = Math.min(700, window.innerWidth - 48);
+      const scale = Math.min(1, maxW / img.naturalWidth);
+      canvas.width  = Math.round(img.naturalWidth  * scale);
+      canvas.height = Math.round(img.naturalHeight * scale);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      uploadZone.classList.add('hidden');
+      pickerWrap.classList.remove('hidden');
+    };
+    img.src = url;
+  }
+
+  // Pick color on click
+  canvas.addEventListener('click', e => {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width  / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const x = Math.floor((e.clientX - rect.left) * scaleX);
+    const y = Math.floor((e.clientY - rect.top)  * scaleY);
+    const px = ctx.getImageData(x, y, 1, 1).data;
+    showColor(px[0], px[1], px[2]);
+
+    // Move crosshair
+    crosshair.style.left = `${e.clientX - rect.left}px`;
+    crosshair.style.top  = `${e.clientY - rect.top}px`;
+    crosshair.style.display = 'block';
+  });
+
+  // Move crosshair preview on hover
+  canvas.addEventListener('mousemove', e => {
+    const rect = canvas.getBoundingClientRect();
+    crosshair.style.left = `${e.clientX - rect.left}px`;
+    crosshair.style.top  = `${e.clientY - rect.top}px`;
+  });
+
+  function showColor(r, g, b) {
+    const hex = rgbToHex(r, g, b);
+    const hsl = rgbToHsl(r, g, b);
+
+    document.getElementById('colorSwatch').style.background = hex;
+    document.getElementById('hexVal').textContent = hex;
+    document.getElementById('rgbVal').textContent = `rgb(${r}, ${g}, ${b})`;
+    document.getElementById('hslVal').textContent = `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
+
+    // Add to palette
+    if (!pickedColors.includes(hex)) {
+      pickedColors.unshift(hex);
+      if (pickedColors.length > 10) pickedColors.pop();
+      renderPalette();
+    }
+  }
+
+  function renderPalette() {
+    palette.innerHTML = pickedColors.map(c => `
+      <div class="palette-swatch" style="background:${c}" title="${c}" onclick="copyText('${c}')"></div>
+    `).join('');
+  }
+
+  // Copy buttons
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const val = document.getElementById(btn.dataset.target).textContent;
+      copyText(val);
+      btn.textContent = '✓';
+      setTimeout(() => btn.textContent = '⧉', 1500);
+    });
+  });
+
+  function copyText(text) {
+    navigator.clipboard.writeText(text).catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+    });
+  }
+
+  document.getElementById('newImageBtn').addEventListener('click', () => {
+    pickerWrap.classList.add('hidden');
+    uploadZone.classList.remove('hidden');
+    fileInput.value = '';
+    pickedColors = [];
+    crosshair.style.display = 'none';
+  });
+
+  // Color conversion helpers
+  function rgbToHex(r, g, b) {
+    return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('');
+  }
+
+  function rgbToHsl(r, g, b) {
+    r /= 255; g /= 255; b /= 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    let h, s, l = (max + min) / 2;
+    if (max === min) { h = s = 0; }
+    else {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+        case g: h = ((b - r) / d + 2) / 6; break;
+        case b: h = ((r - g) / d + 4) / 6; break;
+      }
+    }
+    return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
+  }
+</script>
+
+<style>
+.picker-wrap { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.picker-layout { display: grid; grid-template-columns: 1fr 240px; min-height: 400px; }
+@media(max-width:640px) { .picker-layout { grid-template-columns: 1fr; } }
+
+.canvas-container { padding: 20px; background: #080d1a; }
+.preview-label { font-size: 0.82rem; color: var(--muted); margin-bottom: 10px; }
+.canvas-box { position: relative; display: inline-block; cursor: crosshair; }
+#imgCanvas { display: block; max-width: 100%; border-radius: 6px; }
+
+.crosshair {
+  display: none;
+  position: absolute;
+  width: 20px; height: 20px;
+  border: 2px solid white;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.5);
+}
+
+.color-panel { padding: 20px; border-left: 1px solid var(--border); display: flex; flex-direction: column; gap: 16px; }
+.color-swatch { width: 100%; height: 80px; border-radius: 8px; border: 1px solid var(--border); background: #000; transition: background 0.15s; }
+
+.color-values { display: flex; flex-direction: column; gap: 10px; }
+.color-row { display: flex; align-items: center; gap: 8px; background: #080d1a; border-radius: 6px; padding: 8px 10px; }
+.color-label { font-size: 0.75rem; font-weight: 700; color: var(--muted); width: 32px; }
+.color-value { flex: 1; font-size: 0.82rem; font-family: monospace; color: var(--text); }
+.copy-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1rem; padding: 2px 4px; transition: color 0.15s; }
+.copy-btn:hover { color: var(--blue); }
+
+.palette-section { }
+.palette-label { font-size: 0.78rem; color: var(--muted); margin-bottom: 8px; }
+.palette { display: flex; flex-wrap: wrap; gap: 6px; }
+.palette-swatch { width: 28px; height: 28px; border-radius: 4px; cursor: pointer; border: 1px solid var(--border); transition: transform 0.1s; }
+.palette-swatch:hover { transform: scale(1.15); }
+</style>
+
+{% endblock %}

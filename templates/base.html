@@ -23,19 +23,9 @@
         <span class="logo-nova">Nova</span><span class="logo-tech">Technologies</span>
       </a>
       <nav class="nav">
-        <div class="nav-dropdown">
-          <button class="nav-link nav-drop-btn {% if active == 'home' or active == 'tools' %}nav-active{% endif %}">
-            Tools ▾
-          </button>
-          <div class="dropdown-menu">
-            <a href="/" class="dropdown-item">🖌️ Object Remover</a>
-            <a href="/remove-background" class="dropdown-item">✂️ Background Remover</a>
-            <a href="/image-editor" class="dropdown-item">🖼️ Image Editor</a>
-          </div>
-        </div>
+        <a href="/" class="nav-link {% if active == 'home' %}nav-active{% endif %}">Tools</a>
         <a href="/blog" class="nav-link {% if active == 'blog' %}nav-active{% endif %}">Blog</a>
         <a href="/about" class="nav-link {% if active == 'about' %}nav-active{% endif %}">About</a>
-        <a href="/privacy" class="nav-link {% if active == 'privacy' %}nav-active{% endif %}">Privacy</a>
       </nav>
     </div>
   </header>

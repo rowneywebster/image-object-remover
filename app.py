@@ -104,6 +104,10 @@ def blog_text():
 def blog_inpainting():
     return render_template('blog_inpainting.html', active='blog')
 
+@app.route('/remove-object')
+def remove_object_page():
+    return render_template('object_remover.html', active='tools')
+
 @app.route('/remove-background')
 def bg_remover():
     return render_template('bg_remover.html', active='tools')
@@ -111,6 +115,10 @@ def bg_remover():
 @app.route('/image-editor')
 def image_editor():
     return render_template('image_editor.html', active='tools')
+
+@app.route('/color-picker')
+def color_picker():
+    return render_template('color_picker.html', active='tools')
 
 @app.route('/uploads/<path:filename>')
 def serve_upload(filename):

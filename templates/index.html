@@ -1,452 +1,97 @@
 {% extends "base.html" %}
-{% block title %}AI Image Object Remover — Free Online Tool{% endblock %}
-{% block meta_desc %}Free AI tool to remove watermarks, logos, text, buttons and objects from photos. No sign-up needed. Files deleted in 20 minutes. Powered by Nova Technologies.{% endblock %}
+{% block title %}Free AI Image Tools — Nova Technologies{% endblock %}
+{% block meta_desc %}Free online image tools powered by AI. Remove objects, remove backgrounds, edit images, pick colors and more. No signup, files deleted in 20 minutes.{% endblock %}
+
 {% block content %}
 
-  <!-- AdSense: Top leaderboard -->
-  <div class="container ad-slot">
-    <ins class="adsbygoogle"
-         style="display:block"
-         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-         data-ad-slot="3333333333"
-         data-ad-format="auto"
-         data-full-width-responsive="true"></ins>
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <h1>Free AI Image Tools</h1>
+    <p class="hero-sub">Powerful image editing tools — free, fast, private. No account needed. Files auto-deleted in 20 minutes.</p>
+  </div>
+</section>
+
+<!-- Tools Grid -->
+<main class="container" style="padding: 48px 20px;">
+
+  <div class="tools-grid">
+
+    <a href="/remove-object" class="tool-card">
+      <div class="tool-card-icon">🖌️</div>
+      <div class="tool-card-body">
+        <h2>Object Remover</h2>
+        <p>Remove watermarks, logos, text, buttons or any unwanted object from photos using AI inpainting.</p>
+        <span class="tool-tag">AI Powered</span>
+      </div>
+      <div class="tool-card-arrow">→</div>
+    </a>
+
+    <a href="/remove-background" class="tool-card">
+      <div class="tool-card-icon">✂️</div>
+      <div class="tool-card-body">
+        <h2>Background Remover</h2>
+        <p>Instantly remove any image background. Download as transparent PNG or choose a custom background color.</p>
+        <span class="tool-tag">AI Powered</span>
+      </div>
+      <div class="tool-card-arrow">→</div>
+    </a>
+
+    <a href="/image-editor" class="tool-card">
+      <div class="tool-card-icon">🖼️</div>
+      <div class="tool-card-body">
+        <h2>Image Editor</h2>
+        <p>Resize, crop, rotate, mirror, compress, convert format, pixelate or convert to black & white.</p>
+        <span class="tool-tag">8 Tools</span>
+      </div>
+      <div class="tool-card-arrow">→</div>
+    </a>
+
+    <a href="/color-picker" class="tool-card">
+      <div class="tool-card-icon">🎨</div>
+      <div class="tool-card-body">
+        <h2>Color Picker</h2>
+        <p>Upload any image and click to pick colors. Get HEX, RGB and HSL values instantly.</p>
+        <span class="tool-tag">Free</span>
+      </div>
+      <div class="tool-card-arrow">→</div>
+    </a>
+
+  </div>
+
+  <!-- Ad: Mid -->
+  <div class="ad-wrap" style="margin-top:48px">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-3434791276648961" data-ad-slot="2222222222" data-ad-format="auto" data-full-width-responsive="true"></ins>
     <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
   </div>
 
-  <!-- Hero -->
-  <section class="hero">
-    <div class="container">
-      <h1>AI Image Object Remover</h1>
-      <p class="hero-sub">Paint over anything — watermarks, logos, buttons, text, objects — AI rebuilds the image underneath. 100% free, files auto-deleted after 20 minutes.</p>
-      <div class="usage-badge">100% Free · No Sign-up · No Limits</div>
-    </div>
-  </section>
+</main>
 
-  <!-- Steps indicator -->
-  <div class="steps-bar">
-    <div class="container steps-inner">
-      <div class="step active" id="step1-indicator"><span class="step-num">1</span> Upload</div>
-      <div class="step-arrow">›</div>
-      <div class="step" id="step2-indicator"><span class="step-num">2</span> Paint Object</div>
-      <div class="step-arrow">›</div>
-      <div class="step" id="step3-indicator"><span class="step-num">3</span> Result</div>
+<!-- Features -->
+<section class="features">
+  <div class="container features-grid">
+    <div class="feature">
+      <div class="feature-icon">🔒</div>
+      <h3>100% Private</h3>
+      <p>All uploaded images are automatically deleted within 20 minutes. We never store or share your files.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">⚡</div>
+      <h3>Fast & Free</h3>
+      <p>All tools are completely free with no daily limits, no watermarks on output, and no signup required.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">💰</div>
+      <h3>Zero Cost</h3>
+      <p>All processing runs locally on our server. No third-party APIs, no per-image fees, always free.</p>
     </div>
   </div>
+</section>
 
-  <!-- Main Tool -->
-  <main class="container tool-wrapper">
+<!-- Ad: Footer -->
+<div class="ad-wrap container" style="margin-bottom:32px">
+  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-3434791276648961" data-ad-slot="3333333333" data-ad-format="auto" data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
 
-    <!-- STEP 1: Upload -->
-    <div id="step1">
-      <div class="upload-zone" id="uploadZone">
-        <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" hidden />
-        <div class="upload-icon">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-            <polyline points="17 8 12 3 7 8"/>
-            <line x1="12" y1="3" x2="12" y2="15"/>
-          </svg>
-        </div>
-        <p class="upload-label">Drop your image here or <span class="link">click to browse</span></p>
-        <p class="upload-hint">JPEG · PNG · WebP · Max 20 MB</p>
-      </div>
-    </div>
-
-    <!-- STEP 2: Paint mask -->
-    <div id="step2" class="hidden">
-      <div class="paint-header">
-        <p class="paint-instructions">
-          <strong>Paint over the object</strong> — use the brush to cover whatever you want removed, then click <em>Remove Object</em>.
-        </p>
-        <div class="brush-controls">
-          <label for="brushSize">Brush size:</label>
-          <input type="range" id="brushSize" min="5" max="80" value="24" />
-          <span id="brushSizeVal">24px</span>
-          <button class="btn btn-sm btn-secondary" id="undoBtn">Undo</button>
-          <button class="btn btn-sm btn-secondary" id="clearBtn">Clear</button>
-        </div>
-      </div>
-
-      <div class="canvas-wrap" id="canvasWrap">
-        <canvas id="imageCanvas"></canvas>
-        <canvas id="maskCanvas"></canvas>
-      </div>
-
-      <div class="paint-actions">
-        <button class="btn btn-primary" id="submitBtn">Remove Object</button>
-        <button class="btn btn-secondary" id="backBtn">← Back</button>
-      </div>
-    </div>
-
-    <!-- Progress -->
-    <div class="progress-wrap hidden" id="progressWrap">
-      <div class="progress-bar">
-        <div class="progress-fill" id="progressFill"></div>
-      </div>
-      <p class="progress-label" id="progressLabel">Processing...</p>
-    </div>
-
-    <!-- Error -->
-    <div class="error-box hidden" id="errorBox">
-      <span id="errorMsg"></span>
-    </div>
-
-    <!-- STEP 3: Result -->
-    <div id="step3" class="hidden">
-      <div class="result-wrap">
-        <div class="result-tabs">
-          <button class="tab active" data-tab="after">Result</button>
-          <button class="tab" data-tab="before">Original</button>
-          <button class="tab" data-tab="compare">Compare</button>
-        </div>
-
-        <div class="result-view">
-          <div class="tab-panel active" id="panel-after">
-            <img id="imgAfter" src="" alt="Watermark removed" />
-          </div>
-          <div class="tab-panel hidden" id="panel-before">
-            <img id="imgBefore" src="" alt="Original image" />
-          </div>
-          <div class="tab-panel hidden compare-panel" id="panel-compare">
-            <div class="compare-container">
-              <img id="imgCompareLeft" src="" alt="Before" />
-              <div class="compare-divider" id="compareDivider"></div>
-              <img id="imgCompareRight" src="" alt="After" />
-              <div class="compare-handle" id="compareHandle">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-                  <path d="M8 5l-7 7 7 7M16 5l7 7-7 7"/>
-                </svg>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="result-actions">
-          <a class="btn btn-primary" id="downloadBtn" href="#" download="watermark-removed.png">Download Image</a>
-          <button class="btn btn-secondary" id="newImageBtn">Remove Another</button>
-        </div>
-        <p class="usage-info" id="usageInfo"></p>
-      </div>
-    </div>
-
-  </main>
-
-  <!-- AdSense: Mid banner (below tool) -->
-  <div class="container ad-slot">
-    <ins class="adsbygoogle"
-         style="display:block"
-         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-         data-ad-slot="4444444444"
-         data-ad-format="auto"
-         data-full-width-responsive="true"></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-  </div>
-
-  <!-- Features -->
-  <section class="features">
-    <div class="container features-grid">
-      <div class="feature">
-        <div class="feature-icon">&#128274;</div>
-        <h3>Private & Secure</h3>
-        <p>Your images are automatically deleted after 20 minutes. We never store or sell your data.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">&#9889;</div>
-        <h3>AI-Powered</h3>
-        <p>Uses LaMa deep learning inpainting — the same technology powering professional editing tools.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">&#127758;</div>
-        <h3>Remove Anything</h3>
-        <p>Works on watermarks, logos, buttons, people, text overlays, objects — anything you paint over.</p>
-      </div>
-    </div>
-  </section>
-
-  <script>
-    // ── State ─────────────────────────────────────────────────────────────────
-    let originalFile = null;
-    let isDrawing    = false;
-    let history      = [];  // canvas snapshots for undo
-
-    // ── Elements ──────────────────────────────────────────────────────────────
-    const uploadZone    = document.getElementById('uploadZone');
-    const fileInput     = document.getElementById('fileInput');
-    const step1         = document.getElementById('step1');
-    const step2         = document.getElementById('step2');
-    const step3         = document.getElementById('step3');
-    const progressWrap  = document.getElementById('progressWrap');
-    const progressFill  = document.getElementById('progressFill');
-    const progressLabel = document.getElementById('progressLabel');
-    const errorBox      = document.getElementById('errorBox');
-    const errorMsg      = document.getElementById('errorMsg');
-    const downloadBtn   = document.getElementById('downloadBtn');
-    const newImageBtn   = document.getElementById('newImageBtn');
-    const brushSizeInput= document.getElementById('brushSize');
-    const brushSizeVal  = document.getElementById('brushSizeVal');
-    const imageCanvas   = document.getElementById('imageCanvas');
-    const maskCanvas    = document.getElementById('maskCanvas');
-    const imgCtx        = imageCanvas.getContext('2d');
-    const maskCtx       = maskCanvas.getContext('2d');
-
-    // ── Steps ─────────────────────────────────────────────────────────────────
-    function goStep(n) {
-      [step1, step2, step3].forEach((el, i) => el.classList.toggle('hidden', i + 1 !== n));
-      document.querySelectorAll('.step').forEach((el, i) => el.classList.toggle('active', i === n - 1));
-    }
-
-    // ── Drag & drop ───────────────────────────────────────────────────────────
-    uploadZone.addEventListener('click', () => {
-      if (!uploadZone.classList.contains('disabled')) fileInput.click();
-    });
-
-    uploadZone.addEventListener('dragover', e => {
-      e.preventDefault();
-      uploadZone.classList.add('drag-over');
-    });
-
-    uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
-
-    uploadZone.addEventListener('drop', e => {
-      e.preventDefault();
-      uploadZone.classList.remove('drag-over');
-      if (e.dataTransfer.files[0]) loadImageFile(e.dataTransfer.files[0]);
-    });
-
-    fileInput.addEventListener('change', () => {
-      if (fileInput.files[0]) loadImageFile(fileInput.files[0]);
-    });
-
-    // ── Load image into canvas ────────────────────────────────────────────────
-    function loadImageFile(file) {
-      hideError();
-      originalFile = file;
-      const reader = new FileReader();
-      reader.onload = e => {
-        const img = new Image();
-        img.onload = () => {
-          // Limit display size while keeping aspect ratio
-          const maxW = Math.min(img.width,  window.innerWidth - 48);
-          const maxH = Math.min(img.height, 560);
-          const scale = Math.min(maxW / img.width, maxH / img.height, 1);
-          const w = Math.round(img.width  * scale);
-          const h = Math.round(img.height * scale);
-
-          [imageCanvas, maskCanvas].forEach(c => { c.width = w; c.height = h; });
-
-          imgCtx.drawImage(img, 0, 0, w, h);
-          maskCtx.clearRect(0, 0, w, h);
-          history = [];
-
-          goStep(2);
-        };
-        img.src = e.target.result;
-        originalUrl = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-
-    // ── Brush controls ────────────────────────────────────────────────────────
-    brushSizeInput.addEventListener('input', () => {
-      brushSizeVal.textContent = brushSizeInput.value + 'px';
-    });
-
-    document.getElementById('clearBtn').addEventListener('click', () => {
-      saveHistory();
-      maskCtx.clearRect(0, 0, maskCanvas.width, maskCanvas.height);
-    });
-
-    document.getElementById('undoBtn').addEventListener('click', () => {
-      if (history.length === 0) return;
-      maskCtx.putImageData(history.pop(), 0, 0);
-    });
-
-    document.getElementById('backBtn').addEventListener('click', () => {
-      goStep(1);
-      fileInput.value = '';
-      originalFile = null;
-    });
-
-    // ── Drawing on mask canvas ────────────────────────────────────────────────
-    function saveHistory() {
-      history.push(maskCtx.getImageData(0, 0, maskCanvas.width, maskCanvas.height));
-      if (history.length > 20) history.shift();
-    }
-
-    function getPos(e) {
-      const rect = maskCanvas.getBoundingClientRect();
-      const scaleX = maskCanvas.width  / rect.width;
-      const scaleY = maskCanvas.height / rect.height;
-      const src = e.touches ? e.touches[0] : e;
-      return {
-        x: (src.clientX - rect.left) * scaleX,
-        y: (src.clientY - rect.top)  * scaleY,
-      };
-    }
-
-    function paint(e) {
-      if (!isDrawing) return;
-      const { x, y } = getPos(e);
-      const r = parseInt(brushSizeInput.value) / 2;
-      maskCtx.beginPath();
-      maskCtx.arc(x, y, r, 0, Math.PI * 2);
-      maskCtx.fillStyle = 'rgba(255, 80, 80, 0.55)';
-      maskCtx.fill();
-    }
-
-    maskCanvas.addEventListener('mousedown',  e => { saveHistory(); isDrawing = true; paint(e); });
-    maskCanvas.addEventListener('mousemove',  e => paint(e));
-    maskCanvas.addEventListener('mouseup',    () => isDrawing = false);
-    maskCanvas.addEventListener('mouseleave', () => isDrawing = false);
-    maskCanvas.addEventListener('touchstart', e => { e.preventDefault(); saveHistory(); isDrawing = true; paint(e); }, { passive: false });
-    maskCanvas.addEventListener('touchmove',  e => { e.preventDefault(); paint(e); }, { passive: false });
-    maskCanvas.addEventListener('touchend',   () => isDrawing = false);
-
-    // ── Submit ────────────────────────────────────────────────────────────────
-    document.getElementById('submitBtn').addEventListener('click', async () => {
-      // Check that user painted something
-      const pixels = maskCtx.getImageData(0, 0, maskCanvas.width, maskCanvas.height).data;
-      const hasMask = pixels.some((v, i) => i % 4 === 3 && v > 10);
-      if (!hasMask) {
-        showError('Please paint over the watermark area before submitting.');
-        return;
-      }
-
-      hideError();
-      goStep(2);
-      showProgress('Preparing image...');
-      setProgress(15);
-
-      // Build mask: white on black
-      const offscreen = document.createElement('canvas');
-      offscreen.width  = maskCanvas.width;
-      offscreen.height = maskCanvas.height;
-      const offCtx = offscreen.getContext('2d');
-      offCtx.fillStyle = 'black';
-      offCtx.fillRect(0, 0, offscreen.width, offscreen.height);
-
-      // Re-draw painted areas as solid white
-      const src  = maskCtx.getImageData(0, 0, maskCanvas.width, maskCanvas.height);
-      const data = src.data;
-      offCtx.fillStyle = 'white';
-      for (let i = 0; i < data.length; i += 4) {
-        if (data[i + 3] > 10) {
-          const px = (i / 4) % maskCanvas.width;
-          const py = Math.floor((i / 4) / maskCanvas.width);
-          offCtx.fillRect(px - 1, py - 1, 3, 3);
-        }
-      }
-
-      // Convert canvases to blobs
-      const [imgBlob, maskBlob] = await Promise.all([
-        new Promise(res => imageCanvas.toBlob(res, 'image/png')),
-        new Promise(res => offscreen.toBlob(res, 'image/png')),
-      ]);
-
-      const formData = new FormData();
-      formData.append('image', imgBlob, 'image.png');
-      formData.append('mask',  maskBlob, 'mask.png');
-
-      setProgress(35);
-      progressLabel.textContent = 'Sending to AI...';
-
-      try {
-        const res  = await fetch('/api/remove', { method: 'POST', body: formData });
-        setProgress(80);
-        progressLabel.textContent = 'AI is removing the watermark...';
-        const data = await res.json();
-
-        if (!res.ok) {
-          hideProgress();
-          showError(data.error || 'Something went wrong. Please try again.');
-          return;
-        }
-
-        setProgress(100);
-        setTimeout(() => {
-          hideProgress();
-          showResult(data);
-        }, 300);
-
-      } catch (_) {
-        hideProgress();
-        showError('Network error. Please check your connection and try again.');
-      }
-    });
-
-    // ── Show result ───────────────────────────────────────────────────────────
-    function showResult(data) {
-      document.getElementById('imgAfter').src        = data.result;
-      document.getElementById('imgBefore').src       = data.original;
-      document.getElementById('imgCompareLeft').src  = data.original;
-      document.getElementById('imgCompareRight').src = data.result;
-      downloadBtn.href = data.result;
-
-      hideProgress();
-      goStep(3);
-      setActiveTab('after');
-    }
-
-    newImageBtn.addEventListener('click', () => {
-      goStep(1);
-      fileInput.value = '';
-      originalFile = null;
-    });
-
-    // ── Tabs ──────────────────────────────────────────────────────────────────
-    document.querySelectorAll('.tab').forEach(btn => {
-      btn.addEventListener('click', () => setActiveTab(btn.dataset.tab));
-    });
-
-    function setActiveTab(name) {
-      document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
-      document.querySelectorAll('.tab-panel').forEach(p => {
-        p.classList.toggle('active', p.id === `panel-${name}`);
-        p.classList.toggle('hidden', p.id !== `panel-${name}`);
-      });
-    }
-
-    // ── Compare slider ────────────────────────────────────────────────────────
-    const handle  = document.getElementById('compareHandle');
-    const divider = document.getElementById('compareDivider');
-    let dragging = false;
-
-    handle.addEventListener('mousedown', () => dragging = true);
-    document.addEventListener('mouseup', () => dragging = false);
-    document.addEventListener('mousemove', e => {
-      if (!dragging) return;
-      const container = document.querySelector('.compare-container');
-      if (!container) return;
-      const rect = container.getBoundingClientRect();
-      const pct  = Math.min(Math.max((e.clientX - rect.left) / rect.width * 100, 5), 95);
-      setComparePos(pct);
-    });
-
-    handle.addEventListener('touchmove', e => {
-      const container = document.querySelector('.compare-container');
-      if (!container) return;
-      const rect = container.getBoundingClientRect();
-      const pct  = Math.min(Math.max((e.touches[0].clientX - rect.left) / rect.width * 100, 5), 95);
-      setComparePos(pct);
-    }, { passive: true });
-
-    function setComparePos(pct) {
-      divider.style.left = `${pct}%`;
-      handle.style.left  = `${pct}%`;
-      document.getElementById('imgCompareRight').style.clipPath = `inset(0 0 0 ${pct}%)`;
-    }
-
-    // ── Helpers ───────────────────────────────────────────────────────────────
-    function showProgress(msg) {
-      progressLabel.textContent = msg;
-      progressWrap.classList.remove('hidden');
-      step2.classList.add('hidden');
-    }
-
-    function hideProgress() { progressWrap.classList.add('hidden'); setProgress(0); }
-    function setProgress(p) { progressFill.style.width = `${p}%`; }
-    function showError(msg) { errorMsg.textContent = msg; errorBox.classList.remove('hidden'); }
-    function hideError()    { errorBox.classList.add('hidden'); }
-  </script>
 {% endblock %}

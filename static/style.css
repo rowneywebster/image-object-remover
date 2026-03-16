@@ -629,6 +629,79 @@ body {
 /* ── Utilities ───────────────────────────────────────────────────────────── */
 .hidden { display: none !important; }
 
+/* ── Tools Grid (Homepage) ───────────────────────────────────────────────── */
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.tool-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+
+.tool-card:hover {
+  border-color: var(--blue);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 102, 255, 0.12);
+}
+
+.tool-card-icon {
+  font-size: 2rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.tool-card-body { flex: 1; }
+
+.tool-card-body h2 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+
+.tool-card-body p {
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.tool-tag {
+  display: inline-block;
+  background: rgba(0, 102, 255, 0.12);
+  border: 1px solid rgba(0, 102, 255, 0.25);
+  color: var(--blue);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tool-card-arrow {
+  color: var(--muted);
+  font-size: 1.2rem;
+  transition: color 0.15s, transform 0.15s;
+  flex-shrink: 0;
+}
+
+.tool-card:hover .tool-card-arrow {
+  color: var(--blue);
+  transform: translateX(4px);
+}
+
 /* ── Mobile ──────────────────────────────────────────────────────────────── */
 @media (max-width: 600px) {
   .header-inner { flex-direction: column; text-align: center; }
