@@ -1,0 +1,340 @@
+{% extends 'base.html' %}
+
+{% block title %}Free Image Editor — Resize, Crop, Rotate, Compress & Convert{% endblock %}
+{% block meta_desc %}Free online image editor. Resize, crop, rotate, mirror, compress, convert, pixelate or convert to black & white. No signup required.{% endblock %}
+
+{% block content %}
+<!-- Ad: Top Banner -->
+<div class="ad-wrap">
+  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-3434791276648961" data-ad-slot="1111111111" data-ad-format="auto" data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+
+<section class="hero">
+  <div class="container">
+    <h1>Image Editor</h1>
+    <p class="hero-sub">Resize, crop, rotate, compress, convert and more — free, fast, no signup.</p>
+  </div>
+</section>
+
+<main class="container tool-wrapper">
+
+  <!-- Upload Zone -->
+  <div id="uploadZone" class="upload-zone">
+    <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp,image/gif" hidden />
+    <div class="upload-icon">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+        <polyline points="17 8 12 3 7 8"/>
+        <line x1="12" y1="3" x2="12" y2="15"/>
+      </svg>
+    </div>
+    <p class="upload-label">Drop image here or <span class="link">click to browse</span></p>
+    <p class="upload-hint">JPEG · PNG · WebP · GIF · Max 20 MB</p>
+  </div>
+
+  <!-- Editor -->
+  <div id="editorWrap" class="hidden editor-wrap">
+
+    <!-- Tool Tabs -->
+    <div class="editor-tabs">
+      <button class="etab active" data-tool="resize">Resize</button>
+      <button class="etab" data-tool="crop">Crop</button>
+      <button class="etab" data-tool="mirror">Mirror</button>
+      <button class="etab" data-tool="rotate">Rotate</button>
+      <button class="etab" data-tool="compress">Compress</button>
+      <button class="etab" data-tool="convert">Convert</button>
+      <button class="etab" data-tool="pixelate">Pixelate</button>
+      <button class="etab" data-tool="bw">Black & White</button>
+    </div>
+
+    <div class="editor-body">
+
+      <!-- Left: Controls -->
+      <div class="editor-controls">
+
+        <!-- Resize -->
+        <div class="tool-panel active" id="panel-resize">
+          <h3>Resize Image</h3>
+          <label>Unit</label>
+          <div class="btn-group">
+            <button class="unit-btn active" data-unit="px">Pixels</button>
+            <button class="unit-btn" data-unit="pct">Percent</button>
+          </div>
+          <label>Width</label>
+          <input type="number" id="resizeW" class="ctrl-input" placeholder="Width" />
+          <label>Height</label>
+          <input type="number" id="resizeH" class="ctrl-input" placeholder="Height" />
+          <label><input type="checkbox" id="lockAspect" checked /> Lock aspect ratio</label>
+          <button class="btn btn-primary apply-btn" data-action="resize">Apply Resize</button>
+        </div>
+
+        <!-- Crop -->
+        <div class="tool-panel hidden" id="panel-crop">
+          <h3>Crop Image</h3>
+          <label>Left (px)</label>
+          <input type="number" id="cropLeft" class="ctrl-input" value="0" min="0" />
+          <label>Top (px)</label>
+          <input type="number" id="cropTop" class="ctrl-input" value="0" min="0" />
+          <label>Width (px)</label>
+          <input type="number" id="cropW" class="ctrl-input" />
+          <label>Height (px)</label>
+          <input type="number" id="cropH" class="ctrl-input" />
+          <button class="btn btn-primary apply-btn" data-action="crop">Apply Crop</button>
+        </div>
+
+        <!-- Mirror -->
+        <div class="tool-panel hidden" id="panel-mirror">
+          <h3>Mirror Image</h3>
+          <button class="btn btn-primary apply-btn" data-action="mirror_h" style="margin-bottom:10px">↔ Flip Horizontal</button>
+          <button class="btn btn-primary apply-btn" data-action="mirror_v">↕ Flip Vertical</button>
+        </div>
+
+        <!-- Rotate -->
+        <div class="tool-panel hidden" id="panel-rotate">
+          <h3>Rotate Image</h3>
+          <button class="btn btn-primary apply-btn" data-action="rotate_90" style="margin-bottom:10px">↻ Rotate 90°</button>
+          <button class="btn btn-primary apply-btn" data-action="rotate_180" style="margin-bottom:10px">↻ Rotate 180°</button>
+          <button class="btn btn-primary apply-btn" data-action="rotate_270">↺ Rotate 270°</button>
+        </div>
+
+        <!-- Compress -->
+        <div class="tool-panel hidden" id="panel-compress">
+          <h3>Compress Image</h3>
+          <label>Quality: <span id="qualityVal">80</span>%</label>
+          <input type="range" id="quality" min="10" max="95" value="80" style="width:100%;margin:8px 0" />
+          <p style="font-size:0.82rem;color:var(--muted)">Lower quality = smaller file size</p>
+          <button class="btn btn-primary apply-btn" data-action="compress">Compress</button>
+        </div>
+
+        <!-- Convert -->
+        <div class="tool-panel hidden" id="panel-convert">
+          <h3>Convert Format</h3>
+          <label>Output format</label>
+          <select id="convertFmt" class="ctrl-input">
+            <option value="jpeg">JPEG</option>
+            <option value="png">PNG</option>
+            <option value="webp">WebP</option>
+          </select>
+          <button class="btn btn-primary apply-btn" data-action="convert" style="margin-top:16px">Convert</button>
+        </div>
+
+        <!-- Pixelate -->
+        <div class="tool-panel hidden" id="panel-pixelate">
+          <h3>Pixelate Image</h3>
+          <label>Pixel size: <span id="pixelVal">10</span>px</label>
+          <input type="range" id="pixelSize" min="2" max="50" value="10" style="width:100%;margin:8px 0" />
+          <button class="btn btn-primary apply-btn" data-action="pixelate">Apply Pixelate</button>
+        </div>
+
+        <!-- B&W -->
+        <div class="tool-panel hidden" id="panel-bw">
+          <h3>Black & White</h3>
+          <p style="font-size:0.88rem;color:var(--muted);margin-bottom:16px">Convert your image to greyscale.</p>
+          <button class="btn btn-primary apply-btn" data-action="bw">Convert to B&W</button>
+        </div>
+
+      </div>
+
+      <!-- Right: Preview -->
+      <div class="editor-preview">
+        <p class="preview-label">Preview <span id="imgDims"></span></p>
+        <div class="preview-box">
+          <img id="previewImg" src="" alt="Preview" />
+        </div>
+        <div class="result-actions" style="padding:16px 0 0">
+          <a class="btn btn-primary" id="downloadBtn" href="#" download="edited-image.jpg">Download</a>
+          <button class="btn btn-secondary" id="resetBtn">New Image</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Ad: Mid -->
+    <div class="ad-wrap" style="margin-top:24px">
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-3434791276648961" data-ad-slot="2222222222" data-ad-format="auto" data-full-width-responsive="true"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
+
+  </div>
+
+  <!-- Error -->
+  <div class="error-box hidden" id="errorBox"><span id="errorMsg"></span></div>
+
+</main>
+
+<!-- Features -->
+<section class="features">
+  <div class="container features-grid">
+    <div class="feature"><div class="feature-icon">📐</div><h3>8 Editing Tools</h3><p>Resize, crop, rotate, mirror, compress, convert, pixelate, and black & white — all in one place.</p></div>
+    <div class="feature"><div class="feature-icon">⚡</div><h3>Fast Processing</h3><p>Server-side processing delivers results in seconds, even for large images.</p></div>
+    <div class="feature"><div class="feature-icon">🔒</div><h3>Files Auto-Deleted</h3><p>Your images are deleted from our server within 20 minutes. Complete privacy.</p></div>
+  </div>
+</section>
+
+<!-- Ad: Footer -->
+<div class="ad-wrap container" style="margin-bottom:32px">
+  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-3434791276648961" data-ad-slot="3333333333" data-ad-format="auto" data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+
+<script>
+  const uploadZone  = document.getElementById('uploadZone');
+  const fileInput   = document.getElementById('fileInput');
+  const editorWrap  = document.getElementById('editorWrap');
+  const previewImg  = document.getElementById('previewImg');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const errorBox    = document.getElementById('errorBox');
+  const errorMsg    = document.getElementById('errorMsg');
+
+  let currentFile = null;
+  let originalW = 0, originalH = 0;
+
+  uploadZone.addEventListener('click', () => fileInput.click());
+  uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+  uploadZone.addEventListener('drop', e => { e.preventDefault(); uploadZone.classList.remove('drag-over'); if (e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]); });
+  fileInput.addEventListener('change', () => { if (fileInput.files[0]) loadFile(fileInput.files[0]); });
+
+  function loadFile(file) {
+    currentFile = file;
+    const url = URL.createObjectURL(file);
+    previewImg.src = url;
+    previewImg.onload = () => {
+      originalW = previewImg.naturalWidth;
+      originalH = previewImg.naturalHeight;
+      document.getElementById('resizeW').value = originalW;
+      document.getElementById('resizeH').value = originalH;
+      document.getElementById('cropW').value = originalW;
+      document.getElementById('cropH').value = originalH;
+      document.getElementById('imgDims').textContent = `(${originalW} × ${originalH}px)`;
+    };
+    downloadBtn.href = url;
+    uploadZone.classList.add('hidden');
+    editorWrap.classList.remove('hidden');
+  }
+
+  // Tool tabs
+  document.querySelectorAll('.etab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.etab').forEach(b => b.classList.toggle('active', b === btn));
+      document.querySelectorAll('.tool-panel').forEach(p => {
+        p.classList.toggle('active', p.id === `panel-${btn.dataset.tool}`);
+        p.classList.toggle('hidden', p.id !== `panel-${btn.dataset.tool}`);
+      });
+    });
+  });
+
+  // Unit toggle
+  document.querySelectorAll('.unit-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.unit-btn').forEach(b => b.classList.toggle('active', b === btn));
+    });
+  });
+
+  // Lock aspect ratio
+  document.getElementById('resizeW').addEventListener('input', () => {
+    if (document.getElementById('lockAspect').checked && originalW) {
+      document.getElementById('resizeH').value = Math.round(parseInt(document.getElementById('resizeW').value) * originalH / originalW);
+    }
+  });
+  document.getElementById('resizeH').addEventListener('input', () => {
+    if (document.getElementById('lockAspect').checked && originalH) {
+      document.getElementById('resizeW').value = Math.round(parseInt(document.getElementById('resizeH').value) * originalW / originalH);
+    }
+  });
+
+  // Sliders
+  document.getElementById('quality').addEventListener('input', e => document.getElementById('qualityVal').textContent = e.target.value);
+  document.getElementById('pixelSize').addEventListener('input', e => document.getElementById('pixelVal').textContent = e.target.value);
+
+  // Apply buttons
+  document.querySelectorAll('.apply-btn').forEach(btn => {
+    btn.addEventListener('click', () => applyAction(btn.dataset.action));
+  });
+
+  async function applyAction(action) {
+    if (!currentFile) return;
+    hideError();
+    btn_loading(true);
+
+    const formData = new FormData();
+    formData.append('image', currentFile);
+    formData.append('action', action);
+
+    if (action === 'resize') {
+      const unit = document.querySelector('.unit-btn.active').dataset.unit;
+      formData.append('width', document.getElementById('resizeW').value);
+      formData.append('height', document.getElementById('resizeH').value);
+      formData.append('unit', unit);
+    } else if (action === 'crop') {
+      formData.append('left', document.getElementById('cropLeft').value);
+      formData.append('top', document.getElementById('cropTop').value);
+      formData.append('width', document.getElementById('cropW').value);
+      formData.append('height', document.getElementById('cropH').value);
+    } else if (action === 'compress') {
+      formData.append('quality', document.getElementById('quality').value);
+    } else if (action === 'convert') {
+      formData.append('format', document.getElementById('convertFmt').value);
+    } else if (action === 'pixelate') {
+      formData.append('pixel_size', document.getElementById('pixelSize').value);
+    }
+
+    try {
+      const res = await fetch('/api/edit', { method: 'POST', body: formData });
+      const data = await res.json();
+      if (!res.ok) { showError(data.error || 'Processing failed.'); btn_loading(false); return; }
+
+      previewImg.src = data.result + '?t=' + Date.now();
+      previewImg.onload = () => {
+        originalW = previewImg.naturalWidth;
+        originalH = previewImg.naturalHeight;
+        document.getElementById('imgDims').textContent = `(${originalW} × ${originalH}px)`;
+      };
+      downloadBtn.href = data.result;
+      downloadBtn.download = `edited-image.${data.ext || 'jpg'}`;
+      const blob = await fetch(data.result).then(r => r.blob());
+      currentFile = new File([blob], `edited.${data.ext || 'jpg'}`, { type: blob.type });
+    } catch { showError('Network error. Please try again.'); }
+    btn_loading(false);
+  }
+
+  function btn_loading(loading) {
+    document.querySelectorAll('.apply-btn').forEach(b => b.disabled = loading);
+  }
+
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    editorWrap.classList.add('hidden');
+    uploadZone.classList.remove('hidden');
+    fileInput.value = '';
+    currentFile = null;
+  });
+
+  function showError(msg) { errorMsg.textContent = msg; errorBox.classList.remove('hidden'); }
+  function hideError() { errorBox.classList.add('hidden'); }
+</script>
+
+<style>
+.editor-wrap { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
+.editor-tabs { display:flex; overflow-x:auto; border-bottom:1px solid var(--border); background:#0c1420; scrollbar-width:none; }
+.editor-tabs::-webkit-scrollbar { display:none; }
+.etab { white-space:nowrap; padding:12px 16px; background:none; border:none; color:var(--muted); font-family:'Ubuntu',sans-serif; font-size:0.85rem; cursor:pointer; border-bottom:2px solid transparent; transition:color 0.15s; }
+.etab.active { color:var(--blue); border-bottom-color:var(--blue); background:rgba(0,102,255,0.05); }
+.editor-body { display:grid; grid-template-columns:260px 1fr; min-height:400px; }
+@media(max-width:640px) { .editor-body { grid-template-columns:1fr; } }
+.editor-controls { border-right:1px solid var(--border); padding:20px; background:#0c1420; }
+.tool-panel h3 { font-size:1rem; margin-bottom:16px; color:var(--text); }
+.tool-panel label { display:block; font-size:0.82rem; color:var(--muted); margin:10px 0 4px; }
+.ctrl-input { width:100%; background:#111827; border:1px solid var(--border); color:var(--text); border-radius:6px; padding:8px 10px; font-family:'Ubuntu',sans-serif; font-size:0.9rem; }
+.ctrl-input:focus { outline:none; border-color:var(--blue); }
+.btn-group { display:flex; gap:8px; margin-bottom:8px; }
+.unit-btn { flex:1; padding:8px; border-radius:6px; border:1px solid var(--border); background:none; color:var(--muted); cursor:pointer; font-size:0.82rem; }
+.unit-btn.active { background:var(--blue); color:white; border-color:var(--blue); }
+.apply-btn { width:100%; margin-top:16px; }
+.editor-preview { padding:20px; display:flex; flex-direction:column; }
+.preview-label { font-size:0.82rem; color:var(--muted); margin-bottom:10px; }
+.preview-box { flex:1; display:flex; align-items:center; justify-content:center; background:#080d1a; border-radius:8px; padding:16px; min-height:300px; }
+.preview-box img { max-width:100%; max-height:460px; object-fit:contain; }
+select.ctrl-input { appearance:none; }
+</style>
+{% endblock %}

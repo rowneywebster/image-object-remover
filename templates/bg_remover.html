@@ -1,0 +1,258 @@
+{% extends 'base.html' %}
+
+{% block title %}Remove Background from Image Free — Nova Technologies{% endblock %}
+{% block meta_desc %}Remove image backgrounds instantly for free. AI-powered, no signup required. Download as PNG with transparent background.{% endblock %}
+
+{% block content %}
+<!-- Ad: Top Banner -->
+<div class="ad-wrap">
+  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-3434791276648961" data-ad-slot="1111111111" data-ad-format="auto" data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+
+<section class="hero">
+  <div class="container">
+    <h1>Remove Image Background</h1>
+    <p class="hero-sub">AI removes backgrounds instantly — people, products, objects. Download as transparent PNG. Free, no signup.</p>
+  </div>
+</section>
+
+<main class="container tool-wrapper">
+
+  <!-- Upload Zone -->
+  <div class="upload-zone" id="uploadZone">
+    <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" hidden />
+    <div class="upload-icon">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+        <polyline points="17 8 12 3 7 8"/>
+        <line x1="12" y1="3" x2="12" y2="15"/>
+      </svg>
+    </div>
+    <p class="upload-label">Drop image here or <span class="link">click to browse</span></p>
+    <p class="upload-hint">JPEG · PNG · WebP · Max 20 MB</p>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-wrap hidden" id="progressWrap">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <p class="progress-label" id="progressLabel">Uploading...</p>
+  </div>
+
+  <!-- Error -->
+  <div class="error-box hidden" id="errorBox"><span id="errorMsg"></span></div>
+
+  <!-- Result -->
+  <div class="result-wrap hidden" id="resultWrap">
+    <div class="result-tabs">
+      <button class="tab active" data-tab="result">Result</button>
+      <button class="tab" data-tab="compare">Compare</button>
+    </div>
+
+    <!-- Background color picker -->
+    <div class="bg-picker">
+      <span>Preview background:</span>
+      <button class="bg-btn active" data-bg="transparent" style="background: repeating-conic-gradient(#ccc 0% 25%, white 0% 50%) 0 0/16px 16px" title="Transparent"></button>
+      <button class="bg-btn" data-bg="#ffffff" style="background:#ffffff;border:1px solid #ccc" title="White"></button>
+      <button class="bg-btn" data-bg="#000000" style="background:#000000" title="Black"></button>
+      <button class="bg-btn" data-bg="#0066FF" style="background:#0066FF" title="Blue"></button>
+      <button class="bg-btn" data-bg="#FF6600" style="background:#FF6600" title="Orange"></button>
+      <input type="color" id="customBg" value="#ffffff" title="Custom color" style="width:32px;height:32px;border-radius:50%;border:none;cursor:pointer;padding:0"/>
+    </div>
+
+    <div class="result-view" id="resultView">
+      <div class="tab-panel active" id="panel-result">
+        <div class="canvas-wrap" id="canvasWrap">
+          <canvas id="previewCanvas"></canvas>
+        </div>
+      </div>
+      <div class="tab-panel hidden compare-panel" id="panel-compare">
+        <div class="compare-container">
+          <img id="imgCompareLeft" src="" alt="Before" />
+          <div class="compare-divider" id="compareDivider"></div>
+          <img id="imgCompareRight" src="" alt="After" />
+          <div class="compare-handle" id="compareHandle">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M8 5l-7 7 7 7M16 5l7 7-7 7"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="result-actions">
+      <a class="btn btn-primary" id="downloadBtn" href="#" download="background-removed.png">Download PNG</a>
+      <button class="btn btn-secondary" id="newImageBtn">Try Another Image</button>
+    </div>
+  </div>
+
+  <!-- Ad: Mid -->
+  <div class="ad-wrap" style="margin-top:32px">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-3434791276648961" data-ad-slot="2222222222" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+
+</main>
+
+<!-- Features -->
+<section class="features">
+  <div class="container features-grid">
+    <div class="feature">
+      <div class="feature-icon">🤖</div>
+      <h3>AI Powered</h3>
+      <p>Uses U2Net deep learning model — the same technology behind professional background removal tools.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🖼️</div>
+      <h3>Transparent PNG</h3>
+      <p>Download your image as a high-quality PNG with a transparent background, ready for design use.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🔒</div>
+      <h3>Private & Free</h3>
+      <p>Images deleted in 20 minutes. No account needed. 100% free with no limits.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Ad: Footer -->
+<div class="ad-wrap container" style="margin-bottom:32px">
+  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-3434791276648961" data-ad-slot="3333333333" data-ad-format="auto" data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+
+<script>
+  const uploadZone   = document.getElementById('uploadZone');
+  const fileInput    = document.getElementById('fileInput');
+  const progressWrap = document.getElementById('progressWrap');
+  const progressFill = document.getElementById('progressFill');
+  const progressLabel= document.getElementById('progressLabel');
+  const errorBox     = document.getElementById('errorBox');
+  const errorMsg     = document.getElementById('errorMsg');
+  const resultWrap   = document.getElementById('resultWrap');
+  const downloadBtn  = document.getElementById('downloadBtn');
+  const canvas       = document.getElementById('previewCanvas');
+  const ctx          = canvas.getContext('2d');
+
+  let resultUrl = '';
+  let originalUrl = '';
+  let currentBg = 'transparent';
+
+  uploadZone.addEventListener('click', () => fileInput.click());
+  uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+  uploadZone.addEventListener('drop', e => { e.preventDefault(); uploadZone.classList.remove('drag-over'); if (e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]); });
+  fileInput.addEventListener('change', () => { if (fileInput.files[0]) processFile(fileInput.files[0]); });
+
+  async function processFile(file) {
+    hideError();
+    showProgress('Uploading image...'); setProgress(15);
+    const formData = new FormData();
+    formData.append('image', file);
+    try {
+      setProgress(35); progressLabel.textContent = 'AI removing background...';
+      const res = await fetch('/api/remove-bg', { method: 'POST', body: formData });
+      setProgress(80); progressLabel.textContent = 'Finalizing...';
+      const data = await res.json();
+      if (!res.ok) { hideProgress(); showError(data.error || 'Something went wrong.'); return; }
+      setProgress(100);
+      setTimeout(() => { hideProgress(); showResult(data); }, 300);
+    } catch { hideProgress(); showError('Network error. Please try again.'); }
+  }
+
+  function showResult(data) {
+    resultUrl = data.result;
+    originalUrl = data.original;
+    document.getElementById('imgCompareLeft').src = originalUrl;
+    document.getElementById('imgCompareRight').src = resultUrl;
+    uploadZone.classList.add('hidden');
+    resultWrap.classList.remove('hidden');
+    renderCanvas(currentBg);
+  }
+
+  function renderCanvas(bg) {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (bg === 'transparent') {
+        const size = 20;
+        for (let x = 0; x < canvas.width; x += size) {
+          for (let y = 0; y < canvas.height; y += size) {
+            ctx.fillStyle = ((x/size + y/size) % 2 === 0) ? '#cccccc' : '#ffffff';
+            ctx.fillRect(x, y, size, size);
+          }
+        }
+      } else {
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+      ctx.drawImage(img, 0, 0);
+      downloadBtn.href = canvas.toDataURL('image/png');
+    };
+    img.src = resultUrl;
+  }
+
+  // Background picker
+  document.querySelectorAll('.bg-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.bg-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentBg = btn.dataset.bg;
+      if (resultUrl) renderCanvas(currentBg);
+    });
+  });
+
+  document.getElementById('customBg').addEventListener('input', e => {
+    document.querySelectorAll('.bg-btn').forEach(b => b.classList.remove('active'));
+    currentBg = e.target.value;
+    if (resultUrl) renderCanvas(currentBg);
+  });
+
+  document.getElementById('newImageBtn').addEventListener('click', () => {
+    resultWrap.classList.add('hidden');
+    uploadZone.classList.remove('hidden');
+    fileInput.value = '';
+  });
+
+  // Tabs
+  document.querySelectorAll('.tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b.dataset.tab === btn.dataset.tab));
+      document.querySelectorAll('.tab-panel').forEach(p => {
+        p.classList.toggle('active', p.id === `panel-${btn.dataset.tab}`);
+        p.classList.toggle('hidden', p.id !== `panel-${btn.dataset.tab}`);
+      });
+    });
+  });
+
+  // Compare slider
+  const handle = document.getElementById('compareHandle');
+  const divider = document.getElementById('compareDivider');
+  let dragging = false;
+  handle.addEventListener('mousedown', () => dragging = true);
+  document.addEventListener('mouseup', () => dragging = false);
+  document.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    const container = document.querySelector('.compare-container');
+    const rect = container.getBoundingClientRect();
+    const pct = Math.min(Math.max((e.clientX - rect.left) / rect.width * 100, 5), 95);
+    divider.style.left = `${pct}%`; handle.style.left = `${pct}%`;
+    document.getElementById('imgCompareRight').style.clipPath = `inset(0 0 0 ${pct}%)`;
+  });
+
+  function showProgress(msg) { progressLabel.textContent = msg; progressWrap.classList.remove('hidden'); }
+  function hideProgress() { progressWrap.classList.add('hidden'); setProgress(0); }
+  function setProgress(p) { progressFill.style.width = `${p}%`; }
+  function showError(msg) { errorMsg.textContent = msg; errorBox.classList.remove('hidden'); }
+  function hideError() { errorBox.classList.add('hidden'); }
+</script>
+
+<style>
+.bg-picker { display:flex; align-items:center; gap:10px; padding:14px 20px; border-bottom:1px solid var(--border); flex-wrap:wrap; font-size:0.85rem; color:var(--muted); }
+.bg-btn { width:32px; height:32px; border-radius:50%; border:2px solid transparent; cursor:pointer; transition:border-color 0.15s; }
+.bg-btn.active { border-color: var(--blue); }
+.canvas-wrap { display:flex; justify-content:center; padding:20px; background:#080d1a; }
+#previewCanvas { max-width:100%; max-height:500px; object-fit:contain; }
+</style>
+{% endblock %}
