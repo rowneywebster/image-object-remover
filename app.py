@@ -57,7 +57,7 @@ def inpaint_image(image_path, mask_path, result_path):
     mask_u8    = cv2.dilate(mask_u8, kernel, iterations=2)
 
     arr_bgr       = cv2.cvtColor(arr_rgb, cv2.COLOR_RGB2BGR)
-    inpainted_bgr = cv2.inpaint(arr_bgr, mask_u8, inpaintRadius=15, flags=cv2.INPAINT_TELEA)
+    inpainted_bgr = cv2.inpaint(arr_bgr, mask_u8, inpaintRadius=15, flags=cv2.INPAINT_NS)
     inpainted_rgb = cv2.cvtColor(inpainted_bgr, cv2.COLOR_BGR2RGB)
 
     Image.fromarray(inpainted_rgb).save(result_path, 'PNG')
