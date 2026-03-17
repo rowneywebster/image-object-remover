@@ -164,6 +164,32 @@ def remove_object():
     })
 
 
+def grabcut_remove_bg(input_path, output_path):
+    """Remove background using OpenCV GrabCut — no external API needed."""
+    img_bgr = cv2.imread(input_path)
+    if img_bgr is None:
+        raise ValueError('Could not read image')
+
+    h, w = img_bgr.shape[:2]
+    mask   = np.zeros((h, w), np.uint8)
+    rect   = (int(w * 0.05), int(h * 0.05), int(w * 0.90), int(h * 0.90))
+    bgd_model = np.zeros((1, 65), np.float64)
+    fgd_model = np.zeros((1, 65), np.float64)
+    cv2.grabCut(img_bgr, mask, rect, bgd_model, fgd_model, 8, cv2.GC_INIT_WITH_RECT)
+
+    # Pixels marked as definite/probable foreground
+    fg_mask = np.where((mask == cv2.GC_FGD) | (mask == cv2.GC_PR_FGD), 255, 0).astype(np.uint8)
+
+    # Smooth edges
+    fg_mask = cv2.GaussianBlur(fg_mask, (5, 5), 0)
+    _, fg_mask = cv2.threshold(fg_mask, 127, 255, cv2.THRESH_BINARY)
+
+    # Build RGBA output
+    img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+    rgba    = np.dstack([img_rgb, fg_mask])
+    Image.fromarray(rgba, 'RGBA').save(output_path, 'PNG')
+
+
 @app.route('/api/remove-bg', methods=['POST'])
 def remove_bg():
     if 'image' not in request.files:
@@ -172,13 +198,8 @@ def remove_bg():
     if not allowed_file(file.filename):
         return jsonify({'error': 'Unsupported format. Use JPEG, PNG, or WebP.'}), 400
 
-    try:
-        from rembg import remove as rembg_remove
-    except ImportError:
-        return jsonify({'error': 'Background removal library not installed.'}), 500
-
-    uid = uuid.uuid4().hex
-    ext = file.filename.rsplit('.', 1)[1].lower()
+    uid         = uuid.uuid4().hex
+    ext         = file.filename.rsplit('.', 1)[1].lower()
     orig_name   = f'orig_{uid}.{ext}'
     result_name = f'bgrem_{uid}.png'
     orig_path   = os.path.join(UPLOAD_FOLDER, orig_name)
@@ -186,10 +207,7 @@ def remove_bg():
 
     file.save(orig_path)
     try:
-        with open(orig_path, 'rb') as f:
-            output = rembg_remove(f.read())
-        with open(result_path, 'wb') as f:
-            f.write(output)
+        grabcut_remove_bg(orig_path, result_path)
     except Exception as e:
         for p in [orig_path, result_path]:
             if os.path.exists(p): os.remove(p)
