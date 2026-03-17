@@ -1,448 +1,336 @@
 {% extends "base.html" %}
 {% block title %}AI Image Object Remover — Free Online Tool{% endblock %}
-{% block meta_desc %}Free AI tool to remove watermarks, logos, text, buttons and objects from photos. No sign-up needed. Files deleted in 20 minutes. Powered by Nova Technologies.{% endblock %}
+{% block meta_desc %}Free AI tool to remove watermarks, logos, buttons, text and objects from photos. Paint over anything and AI rebuilds the image. No sign-up, files deleted in 20 minutes.{% endblock %}
+
 {% block content %}
+<section class="hero">
+  <div class="container">
+    <h1>AI Image Object Remover</h1>
+    <p class="hero-sub">Upload an image, paint over anything you want removed — watermarks, logos, buttons, text — AI rebuilds what's underneath.</p>
+  </div>
+</section>
 
-  <!-- AdSense: Top leaderboard -->
-  <div class="container ad-slot">
+<main class="container tool-wrapper">
+
+  <!-- SECTION: Upload -->
+  <div id="section-upload">
+    <div class="upload-zone" id="uploadZone">
+      <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" hidden />
+      <div class="upload-icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+      </div>
+      <p class="upload-label">Drop your image here or <span class="link">click to browse</span></p>
+      <p class="upload-hint">JPEG · PNG · WebP · Max 20 MB</p>
+    </div>
   </div>
 
-  <!-- Hero -->
-  <section class="hero">
-    <div class="container">
-      <h1>AI Image Object Remover</h1>
-      <p class="hero-sub">Paint over anything — watermarks, logos, buttons, text, objects — AI rebuilds the image underneath. 100% free, files auto-deleted after 20 minutes.</p>
-      <div class="usage-badge">100% Free · No Sign-up · No Limits</div>
+  <!-- SECTION: Paint -->
+  <div id="section-paint" class="hidden">
+    <div class="paint-header">
+      <p class="paint-instructions">
+        🖌️ <strong>Paint over the object</strong> you want removed, then click <strong>Remove Object</strong>
+      </p>
+      <div class="brush-controls">
+        <label>Brush:</label>
+        <input type="range" id="brushSize" min="5" max="80" value="24" />
+        <span id="brushSizeVal">24px</span>
+        <button class="btn btn-sm btn-secondary" id="undoBtn">↩ Undo</button>
+        <button class="btn btn-sm btn-secondary" id="clearBtn">✕ Clear</button>
+      </div>
     </div>
-  </section>
 
-  <!-- Steps indicator -->
-  <div class="steps-bar">
-    <div class="container steps-inner">
-      <div class="step active" id="step1-indicator"><span class="step-num">1</span> Upload</div>
-      <div class="step-arrow">›</div>
-      <div class="step" id="step2-indicator"><span class="step-num">2</span> Paint Object</div>
-      <div class="step-arrow">›</div>
-      <div class="step" id="step3-indicator"><span class="step-num">3</span> Result</div>
+    <div class="canvas-wrap" id="canvasWrap">
+      <canvas id="imageCanvas"></canvas>
+      <canvas id="maskCanvas"></canvas>
+    </div>
+
+    <div class="paint-actions">
+      <button class="btn btn-primary" id="submitBtn">Remove Object</button>
+      <button class="btn btn-secondary" id="backBtn">← Upload Different Image</button>
     </div>
   </div>
 
-  <!-- Main Tool -->
-  <main class="container tool-wrapper">
-
-    <!-- STEP 1: Upload -->
-    <div id="step1">
-      <div class="upload-zone" id="uploadZone">
-        <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" hidden />
-        <div class="upload-icon">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-            <polyline points="17 8 12 3 7 8"/>
-            <line x1="12" y1="3" x2="12" y2="15"/>
-          </svg>
-        </div>
-        <p class="upload-label">Drop your image here or <span class="link">click to browse</span></p>
-        <p class="upload-hint">JPEG · PNG · WebP · Max 20 MB</p>
-      </div>
-    </div>
-
-    <!-- STEP 2: Paint mask -->
-    <div id="step2" class="hidden">
-      <div class="paint-header">
-        <p class="paint-instructions">
-          <strong>Paint over the object</strong> — use the brush to cover whatever you want removed, then click <em>Remove Object</em>.
-        </p>
-        <div class="brush-controls">
-          <label for="brushSize">Brush size:</label>
-          <input type="range" id="brushSize" min="5" max="80" value="24" />
-          <span id="brushSizeVal">24px</span>
-          <button class="btn btn-sm btn-secondary" id="undoBtn">Undo</button>
-          <button class="btn btn-sm btn-secondary" id="clearBtn">Clear</button>
-        </div>
-      </div>
-
-      <div class="canvas-wrap" id="canvasWrap">
-        <canvas id="imageCanvas"></canvas>
-        <canvas id="maskCanvas"></canvas>
-      </div>
-
-      <div class="paint-actions">
-        <button class="btn btn-primary" id="submitBtn">Remove Object</button>
-        <button class="btn btn-secondary" id="backBtn">← Back</button>
-      </div>
-    </div>
-
-    <!-- Progress -->
-    <!-- Steps Progress -->
-    <div class="steps-wrap hidden" id="stepsWrap">
+  <!-- SECTION: Processing -->
+  <div id="section-processing" class="hidden">
+    <div class="steps-wrap">
       <div class="steps">
-        <div class="step" id="step1">
-          <div class="step-circle">1</div>
-          <span class="step-label">Upload</span>
-        </div>
-        <div class="step" id="step2">
-          <div class="step-circle">2</div>
-          <span class="step-label">Paint mask</span>
-        </div>
-        <div class="step" id="step3">
-          <div class="step-circle">3</div>
-          <span class="step-label">Processing</span>
-        </div>
-        <div class="step" id="step4">
-          <div class="step-circle">✓</div>
-          <span class="step-label">Done</span>
-        </div>
+        <div class="step done" id="ind1"><div class="step-circle">✓</div><span class="step-label">Uploaded</span></div>
+        <div class="step done" id="ind2"><div class="step-circle">✓</div><span class="step-label">Painted</span></div>
+        <div class="step step-spinning" id="ind3"><div class="step-circle"></div><span class="step-label">AI Processing</span></div>
+        <div class="step" id="ind4"><div class="step-circle">✓</div><span class="step-label">Done</span></div>
       </div>
-      <p class="steps-msg" id="stepsMsg">Loading image...</p>
+      <p class="steps-msg" id="processingMsg">AI is removing the object — please wait...</p>
     </div>
+  </div>
 
-    <!-- Error -->
-    <div class="error-box hidden" id="errorBox">
-      <span id="errorMsg"></span>
-    </div>
+  <!-- Error -->
+  <div class="error-box hidden" id="errorBox"><span id="errorMsg"></span></div>
 
-    <!-- STEP 3: Result -->
-    <div id="step3" class="hidden">
-      <div class="result-wrap">
-        <div class="result-tabs">
-          <button class="tab active" data-tab="after">Result</button>
-          <button class="tab" data-tab="before">Original</button>
-          <button class="tab" data-tab="compare">Compare</button>
+  <!-- SECTION: Result -->
+  <div id="section-result" class="hidden">
+    <div class="result-wrap">
+      <div class="result-tabs">
+        <button class="tab active" data-tab="after">Result</button>
+        <button class="tab" data-tab="before">Original</button>
+        <button class="tab" data-tab="compare">Compare</button>
+      </div>
+      <div class="result-view">
+        <div class="tab-panel active" id="panel-after">
+          <img id="imgAfter" src="" alt="Object removed" />
         </div>
-
-        <div class="result-view">
-          <div class="tab-panel active" id="panel-after">
-            <img id="imgAfter" src="" alt="Watermark removed" />
-          </div>
-          <div class="tab-panel hidden" id="panel-before">
-            <img id="imgBefore" src="" alt="Original image" />
-          </div>
-          <div class="tab-panel hidden compare-panel" id="panel-compare">
-            <div class="compare-container">
-              <img id="imgCompareLeft" src="" alt="Before" />
-              <div class="compare-divider" id="compareDivider"></div>
-              <img id="imgCompareRight" src="" alt="After" />
-              <div class="compare-handle" id="compareHandle">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-                  <path d="M8 5l-7 7 7 7M16 5l7 7-7 7"/>
-                </svg>
-              </div>
+        <div class="tab-panel hidden" id="panel-before">
+          <img id="imgBefore" src="" alt="Original image" />
+        </div>
+        <div class="tab-panel hidden compare-panel" id="panel-compare">
+          <div class="compare-container">
+            <img id="imgCompareLeft" src="" alt="Before" />
+            <div class="compare-divider" id="compareDivider"></div>
+            <img id="imgCompareRight" src="" alt="After" />
+            <div class="compare-handle" id="compareHandle">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M8 5l-7 7 7 7M16 5l7 7-7 7"/></svg>
             </div>
           </div>
         </div>
-
-        <div class="result-actions">
-          <a class="btn btn-primary" id="downloadBtn" href="#" download="watermark-removed.png">Download Image</a>
-          <button class="btn btn-secondary" id="newImageBtn">Remove Another</button>
-        </div>
-        <p class="usage-info" id="usageInfo"></p>
+      </div>
+      <div class="result-actions">
+        <a class="btn btn-primary" id="downloadBtn" href="#" download="object-removed.png">Download Image</a>
+        <button class="btn btn-secondary" id="newImageBtn">Remove Another</button>
       </div>
     </div>
-
-  </main>
-
-  <!-- AdSense: Mid banner (below tool) -->
-  <div class="container ad-slot">
   </div>
 
-  <!-- Features -->
-  <section class="features">
-    <div class="container features-grid">
-      <div class="feature">
-        <div class="feature-icon">&#128274;</div>
-        <h3>Private & Secure</h3>
-        <p>Your images are automatically deleted after 20 minutes. We never store or sell your data.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">&#9889;</div>
-        <h3>AI-Powered</h3>
-        <p>Uses LaMa deep learning inpainting — the same technology powering professional editing tools.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">&#127758;</div>
-        <h3>Remove Anything</h3>
-        <p>Works on watermarks, logos, buttons, people, text overlays, objects — anything you paint over.</p>
-      </div>
-    </div>
-  </section>
+</main>
 
-  <script>
-    // ── State ─────────────────────────────────────────────────────────────────
-    let originalFile = null;
-    let isDrawing    = false;
-    let history      = [];  // canvas snapshots for undo
+<section class="features">
+  <div class="container features-grid">
+    <div class="feature"><div class="feature-icon">🔒</div><h3>Private & Secure</h3><p>Files auto-deleted after 20 minutes. Never stored or shared.</p></div>
+    <div class="feature"><div class="feature-icon">⚡</div><h3>AI Inpainting</h3><p>Uses OpenCV TELEA inpainting to intelligently fill in removed areas.</p></div>
+    <div class="feature"><div class="feature-icon">🌍</div><h3>Remove Anything</h3><p>Watermarks, logos, text, buttons, people — paint over it and it's gone.</p></div>
+  </div>
+</section>
 
-    // ── Elements ──────────────────────────────────────────────────────────────
-    const uploadZone    = document.getElementById('uploadZone');
-    const fileInput     = document.getElementById('fileInput');
-    const step1     = document.getElementById('step1');
-    const step2     = document.getElementById('step2');
-    const step3     = document.getElementById('step3');
-    const step4     = document.getElementById('step4');
-    const stepsWrap = document.getElementById('stepsWrap');
-    const stepsMsg  = document.getElementById('stepsMsg');
-    const errorBox      = document.getElementById('errorBox');
-    const errorMsg      = document.getElementById('errorMsg');
-    const downloadBtn   = document.getElementById('downloadBtn');
-    const newImageBtn   = document.getElementById('newImageBtn');
-    const brushSizeInput= document.getElementById('brushSize');
-    const brushSizeVal  = document.getElementById('brushSizeVal');
-    const imageCanvas   = document.getElementById('imageCanvas');
-    const maskCanvas    = document.getElementById('maskCanvas');
-    const imgCtx        = imageCanvas.getContext('2d');
-    const maskCtx       = maskCanvas.getContext('2d');
+<script>
+  // ── Elements ──────────────────────────────────────────────────────────────
+  const sUpload     = document.getElementById('section-upload');
+  const sPaint      = document.getElementById('section-paint');
+  const sProcessing = document.getElementById('section-processing');
+  const sResult     = document.getElementById('section-result');
+  const uploadZone  = document.getElementById('uploadZone');
+  const fileInput   = document.getElementById('fileInput');
+  const imageCanvas = document.getElementById('imageCanvas');
+  const maskCanvas  = document.getElementById('maskCanvas');
+  const imgCtx      = imageCanvas.getContext('2d');
+  const maskCtx     = maskCanvas.getContext('2d');
+  const errorBox    = document.getElementById('errorBox');
+  const errorMsg    = document.getElementById('errorMsg');
+  const downloadBtn = document.getElementById('downloadBtn');
 
-    // ── Steps ─────────────────────────────────────────────────────────────────
-    function goStep(n) {
-      [step1, step2, step3].forEach((el, i) => el.classList.toggle('hidden', i + 1 !== n));
-      document.querySelectorAll('.step').forEach((el, i) => el.classList.toggle('active', i === n - 1));
-    }
+  let isDrawing = false;
+  let history   = [];
 
-    // ── Drag & drop ───────────────────────────────────────────────────────────
-    uploadZone.addEventListener('click', () => {
-      if (!uploadZone.classList.contains('disabled')) fileInput.click();
-    });
+  // ── Section switching ─────────────────────────────────────────────────────
+  function showSection(name) {
+    [sUpload, sPaint, sProcessing, sResult].forEach(s => s.classList.add('hidden'));
+    document.getElementById('section-' + name).classList.remove('hidden');
+  }
 
-    uploadZone.addEventListener('dragover', e => {
-      e.preventDefault();
-      uploadZone.classList.add('drag-over');
-    });
+  // ── Upload ────────────────────────────────────────────────────────────────
+  uploadZone.addEventListener('click', () => fileInput.click());
+  uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+  uploadZone.addEventListener('drop', e => {
+    e.preventDefault(); uploadZone.classList.remove('drag-over');
+    if (e.dataTransfer.files[0]) loadImageFile(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener('change', () => { if (fileInput.files[0]) loadImageFile(fileInput.files[0]); });
 
-    uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+  function loadImageFile(file) {
+    hideError();
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const maxW  = Math.min(img.width,  window.innerWidth - 48);
+        const maxH  = Math.min(img.height, 560);
+        const scale = Math.min(maxW / img.width, maxH / img.height, 1);
+        const w = Math.round(img.width  * scale);
+        const h = Math.round(img.height * scale);
 
-    uploadZone.addEventListener('drop', e => {
-      e.preventDefault();
-      uploadZone.classList.remove('drag-over');
-      if (e.dataTransfer.files[0]) loadImageFile(e.dataTransfer.files[0]);
-    });
+        imageCanvas.width  = w; imageCanvas.height  = h;
+        maskCanvas.width   = w; maskCanvas.height   = h;
 
-    fileInput.addEventListener('change', () => {
-      if (fileInput.files[0]) loadImageFile(fileInput.files[0]);
-    });
-
-    // ── Load image into canvas ────────────────────────────────────────────────
-    function loadImageFile(file) {
-      hideError();
-      originalFile = file;
-      const reader = new FileReader();
-      reader.onload = e => {
-        const img = new Image();
-        img.onload = () => {
-          // Limit display size while keeping aspect ratio
-          const maxW = Math.min(img.width,  window.innerWidth - 48);
-          const maxH = Math.min(img.height, 560);
-          const scale = Math.min(maxW / img.width, maxH / img.height, 1);
-          const w = Math.round(img.width  * scale);
-          const h = Math.round(img.height * scale);
-
-          [imageCanvas, maskCanvas].forEach(c => { c.width = w; c.height = h; });
-
-          imgCtx.drawImage(img, 0, 0, w, h);
-          maskCtx.clearRect(0, 0, w, h);
-          history = [];
-
-          setStep(2, 'active', 'Paint over the object you want to remove, then click Remove.');
-        };
-        img.src = e.target.result;
-        originalUrl = e.target.result;
+        imgCtx.drawImage(img, 0, 0, w, h);
+        maskCtx.clearRect(0, 0, w, h);
+        history = [];
+        showSection('paint');
       };
-      reader.readAsDataURL(file);
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ── Brush ─────────────────────────────────────────────────────────────────
+  document.getElementById('brushSize').addEventListener('input', e => {
+    document.getElementById('brushSizeVal').textContent = e.target.value + 'px';
+  });
+
+  document.getElementById('clearBtn').addEventListener('click', () => {
+    saveHistory(); maskCtx.clearRect(0, 0, maskCanvas.width, maskCanvas.height);
+  });
+
+  document.getElementById('undoBtn').addEventListener('click', () => {
+    if (history.length) maskCtx.putImageData(history.pop(), 0, 0);
+  });
+
+  document.getElementById('backBtn').addEventListener('click', () => {
+    fileInput.value = ''; showSection('upload');
+  });
+
+  function saveHistory() {
+    history.push(maskCtx.getImageData(0, 0, maskCanvas.width, maskCanvas.height));
+    if (history.length > 20) history.shift();
+  }
+
+  function getPos(e) {
+    const rect = maskCanvas.getBoundingClientRect();
+    const sx = maskCanvas.width  / rect.width;
+    const sy = maskCanvas.height / rect.height;
+    const src = e.touches ? e.touches[0] : e;
+    return { x: (src.clientX - rect.left) * sx, y: (src.clientY - rect.top) * sy };
+  }
+
+  function paint(e) {
+    if (!isDrawing) return;
+    const { x, y } = getPos(e);
+    const r = parseInt(document.getElementById('brushSize').value) / 2;
+    maskCtx.beginPath();
+    maskCtx.arc(x, y, r, 0, Math.PI * 2);
+    maskCtx.fillStyle = 'rgba(255, 50, 50, 0.6)';
+    maskCtx.fill();
+  }
+
+  maskCanvas.addEventListener('mousedown',  e => { saveHistory(); isDrawing = true; paint(e); });
+  maskCanvas.addEventListener('mousemove',  e => paint(e));
+  maskCanvas.addEventListener('mouseup',    () => isDrawing = false);
+  maskCanvas.addEventListener('mouseleave', () => isDrawing = false);
+  maskCanvas.addEventListener('touchstart', e => { e.preventDefault(); saveHistory(); isDrawing = true; paint(e); }, { passive: false });
+  maskCanvas.addEventListener('touchmove',  e => { e.preventDefault(); paint(e); }, { passive: false });
+  maskCanvas.addEventListener('touchend',   () => isDrawing = false);
+
+  // ── Submit ────────────────────────────────────────────────────────────────
+  document.getElementById('submitBtn').addEventListener('click', async () => {
+    const pixels = maskCtx.getImageData(0, 0, maskCanvas.width, maskCanvas.height).data;
+    if (!pixels.some((v, i) => i % 4 === 3 && v > 10)) {
+      showError('Please paint over the area you want removed first.');
+      return;
     }
 
-    // ── Brush controls ────────────────────────────────────────────────────────
-    brushSizeInput.addEventListener('input', () => {
-      brushSizeVal.textContent = brushSizeInput.value + 'px';
-    });
+    hideError();
+    showSection('processing');
 
-    document.getElementById('clearBtn').addEventListener('click', () => {
-      saveHistory();
-      maskCtx.clearRect(0, 0, maskCanvas.width, maskCanvas.height);
-    });
-
-    document.getElementById('undoBtn').addEventListener('click', () => {
-      if (history.length === 0) return;
-      maskCtx.putImageData(history.pop(), 0, 0);
-    });
-
-    document.getElementById('backBtn').addEventListener('click', () => {
-      stepsWrap.classList.add('hidden');
-      fileInput.value = '';
-      originalFile = null;
-    });
-
-    // ── Drawing on mask canvas ────────────────────────────────────────────────
-    function saveHistory() {
-      history.push(maskCtx.getImageData(0, 0, maskCanvas.width, maskCanvas.height));
-      if (history.length > 20) history.shift();
+    // Build white-on-black mask
+    const offscreen = document.createElement('canvas');
+    offscreen.width = maskCanvas.width; offscreen.height = maskCanvas.height;
+    const offCtx = offscreen.getContext('2d');
+    offCtx.fillStyle = 'black';
+    offCtx.fillRect(0, 0, offscreen.width, offscreen.height);
+    const src = maskCtx.getImageData(0, 0, maskCanvas.width, maskCanvas.height).data;
+    offCtx.fillStyle = 'white';
+    for (let i = 0; i < src.length; i += 4) {
+      if (src[i + 3] > 10) {
+        const px = (i / 4) % maskCanvas.width;
+        const py = Math.floor((i / 4) / maskCanvas.width);
+        offCtx.fillRect(px - 1, py - 1, 3, 3);
+      }
     }
 
-    function getPos(e) {
-      const rect = maskCanvas.getBoundingClientRect();
-      const scaleX = maskCanvas.width  / rect.width;
-      const scaleY = maskCanvas.height / rect.height;
-      const src = e.touches ? e.touches[0] : e;
-      return {
-        x: (src.clientX - rect.left) * scaleX,
-        y: (src.clientY - rect.top)  * scaleY,
-      };
-    }
+    const [imgBlob, maskBlob] = await Promise.all([
+      new Promise(r => imageCanvas.toBlob(r, 'image/png')),
+      new Promise(r => offscreen.toBlob(r, 'image/png')),
+    ]);
 
-    function paint(e) {
-      if (!isDrawing) return;
-      const { x, y } = getPos(e);
-      const r = parseInt(brushSizeInput.value) / 2;
-      maskCtx.beginPath();
-      maskCtx.arc(x, y, r, 0, Math.PI * 2);
-      maskCtx.fillStyle = 'rgba(255, 80, 80, 0.55)';
-      maskCtx.fill();
-    }
+    const form = new FormData();
+    form.append('image', imgBlob, 'image.png');
+    form.append('mask',  maskBlob, 'mask.png');
 
-    maskCanvas.addEventListener('mousedown',  e => { saveHistory(); isDrawing = true; paint(e); });
-    maskCanvas.addEventListener('mousemove',  e => paint(e));
-    maskCanvas.addEventListener('mouseup',    () => isDrawing = false);
-    maskCanvas.addEventListener('mouseleave', () => isDrawing = false);
-    maskCanvas.addEventListener('touchstart', e => { e.preventDefault(); saveHistory(); isDrawing = true; paint(e); }, { passive: false });
-    maskCanvas.addEventListener('touchmove',  e => { e.preventDefault(); paint(e); }, { passive: false });
-    maskCanvas.addEventListener('touchend',   () => isDrawing = false);
+    try {
+      const res  = await fetch('/api/remove', { method: 'POST', body: form });
+      const data = await res.json();
 
-    // ── Submit ────────────────────────────────────────────────────────────────
-    document.getElementById('submitBtn').addEventListener('click', async () => {
-      // Check that user painted something
-      const pixels = maskCtx.getImageData(0, 0, maskCanvas.width, maskCanvas.height).data;
-      const hasMask = pixels.some((v, i) => i % 4 === 3 && v > 10);
-      if (!hasMask) {
-        showError('Please paint over the watermark area before submitting.');
+      if (!res.ok) {
+        showSection('paint');
+        showError(data.error || 'Something went wrong. Please try again.');
         return;
       }
 
-      hideError();
-      setStep(3, 'spinning', 'Sending to AI...');
+      // Mark step 3 done
+      document.getElementById('ind3').classList.remove('step-spinning');
+      document.getElementById('ind3').classList.add('done');
+      document.getElementById('ind4').classList.add('done');
+      document.getElementById('processingMsg').textContent = 'Done! Your image is ready.';
 
-      // Build mask: white on black
-      const offscreen = document.createElement('canvas');
-      offscreen.width  = maskCanvas.width;
-      offscreen.height = maskCanvas.height;
-      const offCtx = offscreen.getContext('2d');
-      offCtx.fillStyle = 'black';
-      offCtx.fillRect(0, 0, offscreen.width, offscreen.height);
+      setTimeout(() => showResult(data), 500);
 
-      // Re-draw painted areas as solid white
-      const src  = maskCtx.getImageData(0, 0, maskCanvas.width, maskCanvas.height);
-      const data = src.data;
-      offCtx.fillStyle = 'white';
-      for (let i = 0; i < data.length; i += 4) {
-        if (data[i + 3] > 10) {
-          const px = (i / 4) % maskCanvas.width;
-          const py = Math.floor((i / 4) / maskCanvas.width);
-          offCtx.fillRect(px - 1, py - 1, 3, 3);
-        }
-      }
-
-      // Convert canvases to blobs
-      const [imgBlob, maskBlob] = await Promise.all([
-        new Promise(res => imageCanvas.toBlob(res, 'image/png')),
-        new Promise(res => offscreen.toBlob(res, 'image/png')),
-      ]);
-
-      const formData = new FormData();
-      formData.append('image', imgBlob, 'image.png');
-      formData.append('mask',  maskBlob, 'mask.png');
-
-      try {
-        setStep(3, 'spinning', 'AI is removing the object...');
-        const res  = await fetch('/api/remove', { method: 'POST', body: formData });
-        const data = await res.json();
-
-        if (!res.ok) {
-          setStep(3, '', '');
-          showError(data.error || 'Something went wrong. Please try again.');
-          return;
-        }
-
-        setStep(4, 'done', 'Done! Your image is ready.');
-        setTimeout(() => showResult(data), 400);
-
-      } catch (_) {
-        setStep(3, '', '');
-        showError('Network error. Please check your connection and try again.');
-      }
-    });
-
-    // ── Show result ───────────────────────────────────────────────────────────
-    function showResult(data) {
-      document.getElementById('imgAfter').src        = data.result;
-      document.getElementById('imgBefore').src       = data.original;
-      document.getElementById('imgCompareLeft').src  = data.original;
-      document.getElementById('imgCompareRight').src = data.result;
-      downloadBtn.href = data.result;
-      stepsWrap.classList.add('hidden');
-      setActiveTab('after');
+    } catch (_) {
+      showSection('paint');
+      showError('Network error. Please check your connection and try again.');
     }
+  });
 
-    newImageBtn.addEventListener('click', () => {
-      stepsWrap.classList.add('hidden');
-      fileInput.value = '';
-      originalFile = null;
+  // ── Result ────────────────────────────────────────────────────────────────
+  function showResult(data) {
+    document.getElementById('imgAfter').src        = data.result;
+    document.getElementById('imgBefore').src       = data.original;
+    document.getElementById('imgCompareLeft').src  = data.original;
+    document.getElementById('imgCompareRight').src = data.result;
+    downloadBtn.href = data.result;
+    showSection('result');
+    setTab('after');
+  }
+
+  document.getElementById('newImageBtn').addEventListener('click', () => {
+    fileInput.value = '';
+    // Reset processing indicators
+    document.getElementById('ind3').classList.add('step-spinning');
+    document.getElementById('ind3').classList.remove('done');
+    document.getElementById('ind4').classList.remove('done');
+    showSection('upload');
+  });
+
+  // ── Tabs ──────────────────────────────────────────────────────────────────
+  document.querySelectorAll('.tab').forEach(btn => {
+    btn.addEventListener('click', () => setTab(btn.dataset.tab));
+  });
+
+  function setTab(name) {
+    document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+    document.querySelectorAll('.tab-panel').forEach(p => {
+      p.classList.toggle('active', p.id === `panel-${name}`);
+      p.classList.toggle('hidden',  p.id !== `panel-${name}`);
     });
+  }
 
-    // ── Tabs ──────────────────────────────────────────────────────────────────
-    document.querySelectorAll('.tab').forEach(btn => {
-      btn.addEventListener('click', () => setActiveTab(btn.dataset.tab));
-    });
+  // ── Compare slider ────────────────────────────────────────────────────────
+  const handle = document.getElementById('compareHandle');
+  const divider = document.getElementById('compareDivider');
+  let dragging = false;
+  handle.addEventListener('mousedown', () => dragging = true);
+  document.addEventListener('mouseup',  () => dragging = false);
+  document.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    const c = document.querySelector('.compare-container');
+    if (!c) return;
+    const rect = c.getBoundingClientRect();
+    const pct = Math.min(Math.max((e.clientX - rect.left) / rect.width * 100, 5), 95);
+    divider.style.left = `${pct}%`; handle.style.left = `${pct}%`;
+    document.getElementById('imgCompareRight').style.clipPath = `inset(0 0 0 ${pct}%)`;
+  });
 
-    function setActiveTab(name) {
-      document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
-      document.querySelectorAll('.tab-panel').forEach(p => {
-        p.classList.toggle('active', p.id === `panel-${name}`);
-        p.classList.toggle('hidden', p.id !== `panel-${name}`);
-      });
-    }
-
-    // ── Compare slider ────────────────────────────────────────────────────────
-    const handle  = document.getElementById('compareHandle');
-    const divider = document.getElementById('compareDivider');
-    let dragging = false;
-
-    handle.addEventListener('mousedown', () => dragging = true);
-    document.addEventListener('mouseup', () => dragging = false);
-    document.addEventListener('mousemove', e => {
-      if (!dragging) return;
-      const container = document.querySelector('.compare-container');
-      if (!container) return;
-      const rect = container.getBoundingClientRect();
-      const pct  = Math.min(Math.max((e.clientX - rect.left) / rect.width * 100, 5), 95);
-      setComparePos(pct);
-    });
-
-    handle.addEventListener('touchmove', e => {
-      const container = document.querySelector('.compare-container');
-      if (!container) return;
-      const rect = container.getBoundingClientRect();
-      const pct  = Math.min(Math.max((e.touches[0].clientX - rect.left) / rect.width * 100, 5), 95);
-      setComparePos(pct);
-    }, { passive: true });
-
-    function setComparePos(pct) {
-      divider.style.left = `${pct}%`;
-      handle.style.left  = `${pct}%`;
-      document.getElementById('imgCompareRight').style.clipPath = `inset(0 0 0 ${pct}%)`;
-    }
-
-    // ── Steps helpers ─────────────────────────────────────────────────────────
-    function setStep(num, state, msg) {
-      [step1, step2, step3, step4].forEach((s, i) => {
-        s.classList.remove('active', 'done', 'step-spinning');
-        if (i + 1 < num)  s.classList.add('done');
-        if (i + 1 === num) {
-          s.classList.add(state === 'spinning' ? 'step-spinning' : 'active');
-          if (state === 'done') s.classList.add('done');
-        }
-      });
-      stepsMsg.textContent = msg;
-      stepsWrap.classList.remove('hidden');
-    }
-
-    function showError(msg) { errorMsg.textContent = msg; errorBox.classList.remove('hidden'); }
-    function hideError()    { errorBox.classList.add('hidden'); }
-  </script>
+  function showError(msg) { errorMsg.textContent = msg; errorBox.classList.remove('hidden'); }
+  function hideError()    { errorBox.classList.add('hidden'); }
+</script>
 {% endblock %}
