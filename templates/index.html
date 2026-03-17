@@ -1,64 +1,78 @@
 {% extends "base.html" %}
 {% block title %}Free AI Image Tools — Nova Technologies{% endblock %}
-{% block meta_desc %}Free online image tools powered by AI. Remove objects, remove backgrounds, edit images, pick colors and more. No signup, files deleted in 20 minutes.{% endblock %}
+{% block meta_desc %}Free online image tools. Remove objects, remove backgrounds, edit images, pick colors and more. No signup, files deleted in 20 minutes.{% endblock %}
 
 {% block content %}
 
 <!-- Hero -->
 <section class="hero">
   <div class="container">
-    <h1>Free AI Image Tools</h1>
-    <p class="hero-sub">Powerful image editing tools — free, fast, private. No account needed. Files auto-deleted in 20 minutes.</p>
+    <p class="hero-badge">✦ 100% Free · No Signup</p>
+    <h1 style="margin-top:14px">Powerful <span>Image Tools</span>,<br>Zero Cost</h1>
+    <p class="hero-sub">Remove objects, erase backgrounds, edit and convert images — all free, all private. Files auto-deleted in 20 minutes.</p>
   </div>
 </section>
 
+<!-- Trust bar -->
+<div class="trust-bar">
+  <div class="container trust-inner">
+    <div class="trust-item"><span>🔒</span><span>Files deleted in 20 min</span></div>
+    <div class="trust-item"><span>⚡</span><span>No signup required</span></div>
+    <div class="trust-item"><span>🆓</span><span>Completely free</span></div>
+    <div class="trust-item"><span>🤖</span><span>AI-powered processing</span></div>
+  </div>
+</div>
+
 <!-- Tools Grid -->
-<main class="container" style="padding: 48px 20px;">
+<main class="container tools-section">
+
+  <p class="section-label">All Tools</p>
+  <h2 class="section-title">What would you like to do?</h2>
+  <p class="section-sub">Click any tool to get started — no account, no limits.</p>
 
   <div class="tools-grid">
 
     <a href="/remove-object" class="tool-card">
-      <div class="tool-card-icon">🖌️</div>
-      <div class="tool-card-body">
-        <h2>Object Remover</h2>
-        <p>Remove watermarks, logos, text, buttons or any unwanted object from photos using AI inpainting.</p>
-        <span class="tool-tag">AI Powered</span>
+      <div class="tool-card-top">
+        <div class="tool-card-icon">🖌️</div>
+        <span class="tool-card-arrow">→</span>
       </div>
-      <div class="tool-card-arrow">→</div>
+      <h2>Object Remover</h2>
+      <p>Paint over any watermark, logo, text, button or unwanted object — AI rebuilds what's underneath.</p>
+      <span class="tool-tag">AI Powered</span>
     </a>
 
     <a href="/remove-background" class="tool-card">
-      <div class="tool-card-icon">✂️</div>
-      <div class="tool-card-body">
-        <h2>Background Remover</h2>
-        <p>Instantly remove any image background. Download as transparent PNG or choose a custom background color.</p>
-        <span class="tool-tag">AI Powered</span>
+      <div class="tool-card-top">
+        <div class="tool-card-icon">✂️</div>
+        <span class="tool-card-arrow">→</span>
       </div>
-      <div class="tool-card-arrow">→</div>
+      <h2>Background Remover</h2>
+      <p>Remove any image background instantly. Download as transparent PNG or choose a custom color.</p>
+      <span class="tool-tag">AI Powered</span>
     </a>
 
     <a href="/image-editor" class="tool-card">
-      <div class="tool-card-icon">🖼️</div>
-      <div class="tool-card-body">
-        <h2>Image Editor</h2>
-        <p>Resize, crop, rotate, mirror, compress, convert format, pixelate or convert to black & white.</p>
-        <span class="tool-tag">8 Tools</span>
+      <div class="tool-card-top">
+        <div class="tool-card-icon">🖼️</div>
+        <span class="tool-card-arrow">→</span>
       </div>
-      <div class="tool-card-arrow">→</div>
+      <h2>Image Editor</h2>
+      <p>Resize, crop, rotate, mirror, compress, convert, pixelate or convert to black &amp; white.</p>
+      <span class="tool-tag">8 Tools</span>
     </a>
 
     <a href="/color-picker" class="tool-card">
-      <div class="tool-card-icon">🎨</div>
-      <div class="tool-card-body">
-        <h2>Color Picker</h2>
-        <p>Upload any image and click to pick colors. Get HEX, RGB and HSL values instantly.</p>
-        <span class="tool-tag">Free</span>
+      <div class="tool-card-top">
+        <div class="tool-card-icon">🎨</div>
+        <span class="tool-card-arrow">→</span>
       </div>
-      <div class="tool-card-arrow">→</div>
+      <h2>Color Picker</h2>
+      <p>Upload any image and click any pixel to get HEX, RGB and HSL color codes instantly.</p>
+      <span class="tool-tag">Free</span>
     </a>
 
   </div>
-
 
 </main>
 
@@ -76,13 +90,11 @@
       <p>All tools are completely free with no daily limits, no watermarks on output, and no signup required.</p>
     </div>
     <div class="feature">
-      <div class="feature-icon">💰</div>
-      <h3>Zero Cost</h3>
-      <p>All processing runs locally on our server. No third-party APIs, no per-image fees, always free.</p>
+      <div class="feature-icon">🤖</div>
+      <h3>AI Processing</h3>
+      <p>All processing runs locally on our server using AI algorithms. No third-party APIs, always free.</p>
     </div>
   </div>
 </section>
-
-<!-- Ad: Footer -->
 
 {% endblock %}
