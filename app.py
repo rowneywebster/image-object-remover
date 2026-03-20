@@ -84,6 +84,14 @@ def about():
 def privacy():
     return render_template('privacy.html', active='privacy')
 
+@app.route('/terms')
+def terms():
+    return render_template('terms.html', active='terms')
+
+@app.route('/contact')
+def contact():
+    return render_template('contact.html', active='contact')
+
 @app.route('/blog')
 def blog():
     return render_template('blog.html', active='blog')
